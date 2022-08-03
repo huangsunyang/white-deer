@@ -25,6 +25,7 @@ protected:
   bool InitGlw3Env();
   bool InitImGui();
 
+  void Start();
   void Terminate();
 
   GLFWwindow *m_window;

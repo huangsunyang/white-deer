@@ -16,9 +16,7 @@ namespace Engine {
 using WhiteDeer::Editor::EditorGUIManager;
 
 void Application::RunForever() {
-  assert(InitGlewEnv());
-  assert(InitGlw3Env());
-  assert(InitImGui());
+  Start();
 
   do {
     MainLoop();
@@ -85,6 +83,12 @@ bool Application::InitImGui() {
 
   EditorGUIManager::GetInstance().InitEditors();
   return true;
+}
+
+void Application::Start() {
+  assert(InitGlewEnv());
+  assert(InitGlw3Env());
+  assert(InitImGui());
 }
 
 void Application::Terminate() {
