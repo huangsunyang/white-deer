@@ -38,8 +38,17 @@ typedef void (*JobCallback)(void *);
 
 typedef unsigned int JID;
 
+enum class JobStatus {
+  Idle,
+  Running,
+  Completed,
+};
+
 struct Job {
   Job() : id(GenJobID()) {}
+  ~Job(){
+    printf("Job Deleting %d", id);
+  }
   inline static JID GenJobID() {
     static int ID = 0;
     return ID++;
@@ -47,43 +56,56 @@ struct Job {
 
   JobFunc func = nullptr;
   JobForEachFunc ffunc = nullptr;
-  void *data = nullptr;  // custom data, managed by user
+  void *data = nullptr; // custom data, managed by user
   int count = 1;
-  JobCallback callback = nullptr;  // callback in thread, only for count > 1
+  JobCallback callback = nullptr; // callback in thread, only for count > 1
 
   // used internal
   JID id;
   int left = 1;
   mutex mtx;
+  JobStatus status = JobStatus::Idle;
 };
 
 class WorkerGroup {
- public:
+public:
   explicit WorkerGroup(const string &name, int worker_count = 1);
   ~WorkerGroup();
 
-  void StopAllWorkers();
-  JID ScheduleJob(JobFunc func, void *jobData);
-  JID ScheduleJob(JobForEachFunc func, void *jobData, int n,
-                  JobCallback callback);
-  // todo: make it clear
-  bool HasJob(JID id) { return m_livingJobs.find(id) != m_livingJobs.end(); }
+  shared_ptr<Job> ScheduleJob(JobFunc func, void *jobData);
+  shared_ptr<Job> ScheduleJob(JobForEachFunc func, void *jobData, int n,
+                              JobCallback callback);
 
- protected:
+  static WorkerGroup *GetJobWorkers() {
+    static WorkerGroup *instance = new WorkerGroup("JobThread", 4);
+    return instance;
+  }
+
+  static WorkerGroup *GetFileAsyncWorkers() {
+    static WorkerGroup *instance = new WorkerGroup("FileAsyncThread", 1);
+    return instance;
+  }
+
+  static WorkerGroup *GetRenderWorkers() {
+    static WorkerGroup *instance = new WorkerGroup("RenderThread", 1);
+    return instance;
+  }
+
+protected:
   shared_ptr<Job> CreateJob(JobFunc func, void *jobData);
   shared_ptr<Job> CreateJob(JobForEachFunc func, void *jobData, int n,
                             JobCallback callback);
-  JID ScheduleJob(shared_ptr<Job> job);
+  shared_ptr<Job> ScheduleJob(shared_ptr<Job> job);
+  void StopAllWorkers();
   void WorkerLoop();
 
   static bool m_quit;
   string m_name;
   vector<thread> m_workers;
   queue<shared_ptr<Job>> m_jobQueue;
-  map<JID, shared_ptr<Job>> m_livingJobs;
 
   mutex m_mutex;
   condition_variable m_cv;
 };
-}  // namespace Engine
-}  // namespace WhiteDeer
+} // namespace Engine
+} // namespace WhiteDeer

@@ -49,8 +49,7 @@ class MainApplication : public Application {
 };
 
 int main(int, char **) {
-  WorkerGroup group("test-worker", 4);
-  group.ScheduleJob(
+  WorkerGroup::GetJobWorkers()->ScheduleJob(
       [](void *i, int index) {
         using namespace std::chrono_literals;
         printf("hello world %d in thread %zd\n", index,
@@ -58,8 +57,5 @@ int main(int, char **) {
         std::this_thread::sleep_for(3000ms);
       },
       nullptr, 10, [](void *data) { printf("all jobs done!\n"); });
-  //   using namespace std::chrono_literals;
-  //   std::this_thread::sleep_for(300ms);
-//   group.StopAllWorkers();
   MainApplication::GetInstance().RunForever();
 }

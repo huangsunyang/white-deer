@@ -43,7 +43,6 @@ void WorkerGroup::StopAllWorkers() {
 
 shared_ptr<Job> WorkerGroup::CreateJob(JobFunc func, void *jobData) {
   auto job = std::make_shared<Job>();
-  m_livingJobs.insert(std::make_pair(job->id, job));
   job->func = func;
   job->data = jobData;
   return job;
@@ -52,7 +51,6 @@ shared_ptr<Job> WorkerGroup::CreateJob(JobFunc func, void *jobData) {
 shared_ptr<Job> WorkerGroup::CreateJob(JobForEachFunc ffunc, void *jobData,
                                        int count, JobCallback callback) {
   auto job = std::make_shared<Job>();
-  m_livingJobs.insert(std::make_pair(job->id, job));
   job->ffunc = ffunc;
   job->data = jobData;
   job->count = job->left = count;
@@ -60,18 +58,18 @@ shared_ptr<Job> WorkerGroup::CreateJob(JobForEachFunc ffunc, void *jobData,
   return job;
 }
 
-JID WorkerGroup::ScheduleJob(JobFunc func, void *jobData) {
+shared_ptr<Job> WorkerGroup::ScheduleJob(JobFunc func, void *jobData) {
   auto job = CreateJob(func, jobData);
   return ScheduleJob(job);
 }
 
-JID WorkerGroup::ScheduleJob(JobForEachFunc ffunc, void *jobData, int count,
-                              JobCallback callback) {
+shared_ptr<Job> WorkerGroup::ScheduleJob(JobForEachFunc ffunc, void *jobData, int count,
+                             JobCallback callback) {
   auto job = CreateJob(ffunc, jobData, count, callback);
   return ScheduleJob(job);
 }
 
-JID WorkerGroup::ScheduleJob(shared_ptr<Job> job) {
+shared_ptr<Job> WorkerGroup::ScheduleJob(shared_ptr<Job> job) {
   {
     std::lock_guard lg(m_mutex);
     m_jobQueue.push(job);
@@ -87,7 +85,7 @@ JID WorkerGroup::ScheduleJob(shared_ptr<Job> job) {
   } else {
     m_cv.notify_one();
   }
-  return job->id;
+  return job;
 }
 
 void WorkerGroup::WorkerLoop() {
@@ -99,11 +97,15 @@ void WorkerGroup::WorkerLoop() {
       // get one job
       std::unique_lock lk(m_mutex);
       m_cv.wait(lk, [this] { return m_quit || !m_jobQueue.empty(); });
+      if (m_quit) {
+        return;
+      }
       job = m_jobQueue.front();
       if (--job->count <= 0) {
         m_jobQueue.pop();
       }
       job_index = job->count;
+      job->status = JobStatus::Running;
     }
 
     // run job
@@ -125,10 +127,10 @@ void WorkerGroup::WorkerLoop() {
     }
 
     if (all_complete) {
-      m_livingJobs.erase(job->id);
+      job->status = JobStatus::Completed;
     }
   }
 }
 
-}  // namespace Engine
-}  // namespace WhiteDeer
+} // namespace Engine
+} // namespace WhiteDeer
