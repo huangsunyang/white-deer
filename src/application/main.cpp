@@ -1,5 +1,7 @@
+#define NOMINMAX 1
 #include <GL/gl3w.h>
 
+#include "Tracy.hpp"
 #include "application/application.h"
 #include "filesystem/filesystemmanager.h"
 #include "jobsystem/workers.h"
@@ -24,19 +26,23 @@ class MainApplication : public Application {
     PrepareTriangle();
     WorkerGroup::GetJobWorkers()->ScheduleJob(
         [](void *i, int index) {
+          ZoneScoped;
           using namespace std::chrono_literals;
           LOGD.printf("hello world 第%d in thread %d", index,
                       std::this_thread::get_id());
-          std::this_thread::sleep_for(1000ms);
+        //   std::this_thread::sleep_for(10ms);
         },
-        nullptr, 10,
+        nullptr, 100000,
         [](void *data) {
           LOGE.printf("all jobs done!");
           FileSystemManager::GetInstance();
         });
   }
 
-  virtual void Render() { DrawTriangle(); }
+  virtual void Render() {
+    FrameMark("Render");
+    DrawTriangle();
+  }
 
   GLuint vertexbuffer;
 
@@ -60,7 +66,20 @@ class MainApplication : public Application {
                  g_vertex_buffer_data, GL_STATIC_DRAW);
   }
 
+  void Wait1() {
+    ZoneScoped;
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(1ms);
+  }
+
+  void Wait2() {
+    ZoneScoped;
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(1ms);
+  }
+
   void DrawTriangle() {
+    ZoneScoped;
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -72,6 +91,9 @@ class MainApplication : public Application {
                           0,         // stride
                           (void *)0  // array buffer offset
     );
+
+    Wait1();
+    Wait2();
 
     // Draw the triangle !
     // Starting from vertex 0; 3 vertices total -> 1 triangle

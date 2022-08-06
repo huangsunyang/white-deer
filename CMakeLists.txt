@@ -29,6 +29,11 @@ macro(apply_common_config target_name)
     find_package(plog CONFIG REQUIRED)
     target_link_libraries(${target_name} PRIVATE plog::plog)
 
+    # tracy
+    find_package(Threads REQUIRED)
+    find_package(Tracy CONFIG REQUIRED)
+    target_link_libraries(${target_name} PRIVATE Tracy::TracyClient)
+
     # opengl
     # target_link_libraries(${target_name} PRIVATE opengl32)
 endmacro(apply_common_config)

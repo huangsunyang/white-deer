@@ -1,9 +1,11 @@
+#define NOMINMAX
 #ifdef _WIN32
 #include "Windows.h"
 #endif
 
 #include <string>
 
+#include "Tracy.hpp"
 #include "jobsystem/workers.h"
 
 namespace WhiteDeer {
@@ -63,8 +65,8 @@ shared_ptr<Job> WorkerGroup::ScheduleJob(JobFunc func, void *jobData) {
   return ScheduleJob(job);
 }
 
-shared_ptr<Job> WorkerGroup::ScheduleJob(JobForEachFunc ffunc, void *jobData, int count,
-                             JobCallback callback) {
+shared_ptr<Job> WorkerGroup::ScheduleJob(JobForEachFunc ffunc, void *jobData,
+                                         int count, JobCallback callback) {
   auto job = CreateJob(ffunc, jobData, count, callback);
   return ScheduleJob(job);
 }
@@ -95,6 +97,7 @@ void WorkerGroup::WorkerLoop() {
     int job_index = 0;
     {
       // get one job
+      ZoneScopedN("JobQueue Pop");
       std::unique_lock lk(m_mutex);
       m_cv.wait(lk, [this] { return m_quit || !m_jobQueue.empty(); });
       if (m_quit) {
@@ -107,6 +110,8 @@ void WorkerGroup::WorkerLoop() {
       job_index = job->count;
       job->status = JobStatus::Running;
     }
+
+    ZoneScopedN("Run Job");
 
     // run job
     bool all_complete = false;
@@ -132,5 +137,5 @@ void WorkerGroup::WorkerLoop() {
   }
 }
 
-} // namespace Engine
-} // namespace WhiteDeer
+}  // namespace Engine
+}  // namespace WhiteDeer
