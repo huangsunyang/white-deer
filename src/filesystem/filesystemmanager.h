@@ -17,7 +17,7 @@ class FileSystemManager : public Singleton<FileSystemManager>,
   friend class Singleton<FileSystemManager>;
 
  public:
-  LocalFileSystem* GetLocalFileSystem() { return m_localfs; }
+  static LocalFileSystem* GetLocalFileSystem() { return GetInstance()->m_localfs; }
 
  protected:
   FileSystemManager() {

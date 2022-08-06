@@ -1,6 +1,4 @@
 #include <GL/gl3w.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Initializers/ConsoleInitializer.h>
 
 #include "application/application.h"
 #include "filesystem/filesystemmanager.h"
@@ -20,14 +18,14 @@ class MainApplication : public Application {
   }
 
   virtual void Start() {
+    // everything must happen after Start
     Application::Start();
 
-    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-    plog::init(plog::debug, &consoleAppender);
+    PrepareTriangle();
     WorkerGroup::GetJobWorkers()->ScheduleJob(
         [](void *i, int index) {
           using namespace std::chrono_literals;
-          LOGD.printf("hello world %d in thread %d", index,
+          LOGD.printf("hello world 第%d in thread %d", index,
                       std::this_thread::get_id());
           std::this_thread::sleep_for(1000ms);
         },
@@ -40,7 +38,9 @@ class MainApplication : public Application {
 
   virtual void Render() { DrawTriangle(); }
 
-  void DrawTriangle() {
+  GLuint vertexbuffer;
+
+  void PrepareTriangle() {
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -51,7 +51,6 @@ class MainApplication : public Application {
     };
 
     // This will identify our vertex buffer
-    GLuint vertexbuffer;
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
     glGenBuffers(1, &vertexbuffer);
     // The following commands will talk about our 'vertexbuffer' buffer
@@ -59,7 +58,9 @@ class MainApplication : public Application {
     // Give our vertices to OpenGL.
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data),
                  g_vertex_buffer_data, GL_STATIC_DRAW);
+  }
 
+  void DrawTriangle() {
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -71,9 +72,10 @@ class MainApplication : public Application {
                           0,         // stride
                           (void *)0  // array buffer offset
     );
+
     // Draw the triangle !
-    glDrawArrays(GL_TRIANGLES, 0,
-                 3);  // Starting from vertex 0; 3 vertices total -> 1 triangle
+    // Starting from vertex 0; 3 vertices total -> 1 triangle
+    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
   }
 };

@@ -2,7 +2,10 @@
 #include <imgui.h>
 
 #include <mutex>
+#include <cstdlib>
 #include <string>
+#include <locale>
+#include <codecvt>
 
 #include "editor/gui/editor_gui.h"
 #include "log/log.h"
@@ -43,7 +46,7 @@ class ImGuiLogAppender : public plog::IAppender {
   virtual void write(const plog::Record& record) {
     ExampleAppLog* imguiLog = LogWindow::GetLogger();
     plog::util::nstring wstr = Formatter::format(record);
-    std::string str(wstr.begin(), wstr.end());
+    std::string str = plog::util::toNarrow(wstr, 0);
     std::lock_guard lockgard(m_mtx);
     imguiLog->AddLog(str.c_str());
   }

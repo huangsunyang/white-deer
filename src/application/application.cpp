@@ -1,15 +1,17 @@
-#include <cassert>
-#include <cstdio>
+#include "application/application.h"
 
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 
-#include "log/log.h"
-#include "application/application.h"
+#include <cassert>
+#include <cstdio>
+
 #include "editor/gui/editor_gui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "log/log.h"
+#include "filesystem/filesystemmanager.h"
 
 namespace WhiteDeer {
 namespace Engine {
@@ -33,8 +35,7 @@ static void glfw_error_callback(int error, const char *description) {
 bool Application::InitGlewEnv() {
   glfwSetErrorCallback(glfw_error_callback);
 
-  if (!glfwInit())
-    return false;
+  if (!glfwInit()) return false;
 
   // GL 3.2 + GLSL 130
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -43,10 +44,9 @@ bool Application::InitGlewEnv() {
   // Create window with graphics context
   m_window =
       glfwCreateWindow(m_width, m_height, "White Deer Engine", NULL, NULL);
-  if (m_window == NULL)
-    return false;
+  if (m_window == NULL) return false;
   glfwMakeContextCurrent(m_window);
-  glfwSwapInterval(1); // Enable vsync
+  glfwSwapInterval(1);  // Enable vsync
   return true;
 }
 
@@ -60,7 +60,7 @@ bool Application::InitGlw3Env() {
     return false;
   }
   LOGD.printf("OpenGL %s, GLSL %s", glGetString(GL_VERSION),
-         glGetString(GL_SHADING_LANGUAGE_VERSION));
+              glGetString(GL_SHADING_LANGUAGE_VERSION));
   return true;
 }
 
@@ -69,6 +69,10 @@ bool Application::InitImGui() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
+  auto localfs = FileSystemManager::GetLocalFileSystem();
+  auto fontPath = localfs->ToAbsolute("c:/windows/fonts/deng.ttf");
+  LOGD.printf("loading font: %s", fontPath.string().c_str());
+  io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
   // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable
   // Keyboard Controls io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //
   // Enable Gamepad Controls
@@ -117,6 +121,6 @@ void Application::MainLoop() {
   glfwSwapBuffers(m_window);
 }
 
-} // namespace Engine
+}  // namespace Engine
 
-} // namespace WhiteDeer
+}  // namespace WhiteDeer
