@@ -89,7 +89,7 @@ shared_ptr<Job> WorkerGroup::ScheduleJob(shared_ptr<Job> job) {
 }
 
 void WorkerGroup::WorkerLoop() {
-  printf("job started %zd\n", std::this_thread::get_id());
+  LOGD.printf("worker started %zd", std::this_thread::get_id());
   while (!m_quit) {
     shared_ptr<Job> job;
     int job_index = 0;

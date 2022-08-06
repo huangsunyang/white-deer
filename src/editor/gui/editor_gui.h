@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+#include "utils/common/registry.h"
 #include "utils/common/singleton.h"
 
 namespace WhiteDeer {
@@ -11,23 +12,18 @@ using namespace WhiteDeer::Utils;
 
 class EditorGUI;
 
-class EditorGUIManager : public Singleton<EditorGUIManager> {
+class EditorGUIManager : public Singleton<EditorGUIManager>, public Registry<EditorGUI> {
 public:
   void Render();
   void InitEditors();
-  bool HasEditor(EditorGUI *);
-  void RegisterEditor(EditorGUI *);
-  void UnRegisterEditor(EditorGUI *);
-
-protected:
-  vector<EditorGUI *> m_editorGUIVec;
 };
 
-class EditorGUI : public Singleton<EditorGUI> {
+class EditorGUI {
 private:
   friend class EditorGUIManager;
 
 protected:
+  EditorGUI() {}
   virtual void Render() {} // inplement render for custom editor guis
   bool m_showing = true;
 
@@ -37,7 +33,7 @@ template <typename T>
 class EditorRegistry: public Singleton<T> {
 public:
   static void Register() {
-    EditorGUIManager::GetInstance().RegisterEditor(&GetInstance());
+    EditorGUIManager::GetInstance()->Register(GetInstance());
   }
 };
 

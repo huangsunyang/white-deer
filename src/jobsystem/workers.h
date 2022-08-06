@@ -18,6 +18,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include "log/log.h"
 
 using std::condition_variable;
 using std::future;
@@ -47,7 +48,7 @@ enum class JobStatus {
 struct Job {
   Job() : id(GenJobID()) {}
   ~Job(){
-    printf("Job Deleting %d", id);
+    LOGD.printf("Job Deleting %d", id);
   }
   inline static JID GenJobID() {
     static int ID = 0;

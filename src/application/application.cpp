@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 
+#include "log/log.h"
 #include "application/application.h"
 #include "editor/gui/editor_gui.h"
 
@@ -26,8 +27,7 @@ void Application::RunForever() {
 }
 
 static void glfw_error_callback(int error, const char *description) {
-  // todo: use logger
-  fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+  LOGE.printf("Glfw Error %d: %s", error, description);
 }
 
 bool Application::InitGlewEnv() {
@@ -52,14 +52,14 @@ bool Application::InitGlewEnv() {
 
 bool Application::InitGlw3Env() {
   if (gl3wInit()) {
-    fprintf(stderr, "failed to initialize OpenGL\n");
+    LOGE.printf("failed to initialize OpenGL");
     return false;
   }
   if (!gl3wIsSupported(3, 2)) {
-    fprintf(stderr, "OpenGL 3.2 not supported\n");
+    LOGE.printf("OpenGL 3.2 not supported");
     return false;
   }
-  printf("OpenGL %s, GLSL %s\n", glGetString(GL_VERSION),
+  LOGD.printf("OpenGL %s, GLSL %s", glGetString(GL_VERSION),
          glGetString(GL_SHADING_LANGUAGE_VERSION));
   return true;
 }
@@ -81,7 +81,7 @@ bool Application::InitImGui() {
   ImGui_ImplGlfw_InitForOpenGL(m_window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  EditorGUIManager::GetInstance().InitEditors();
+  EditorGUIManager::GetInstance()->InitEditors();
   return true;
 }
 
@@ -104,13 +104,16 @@ void Application::Terminate() {
 void Application::MainLoop() {
   glfwPollEvents();
 
+  glfwGetFramebufferSize(m_window, &m_width, &m_height);
+  glViewport(0, 0, m_width, m_height);
+  GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
+  glClearBufferfv(GL_COLOR, 0, whiteColor);
+
   Render();
 
   // render editor gui
-  EditorGUIManager::GetInstance().Render();
+  EditorGUIManager::GetInstance()->Render();
 
-  glfwGetFramebufferSize(m_window, &m_width, &m_height);
-  glViewport(0, 0, m_width, m_height);
   glfwSwapBuffers(m_window);
 }
 

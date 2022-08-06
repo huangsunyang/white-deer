@@ -1,6 +1,7 @@
+#include "editor/gui/editor_gui.h"
+
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -8,8 +9,8 @@
 #include <algorithm>
 
 #include "application/application.h"
-#include "editor/gui/editor_gui.h"
 #include "editor/gui/test_editor.h"
+#include "editor/gui/logwindow.h"
 
 namespace WhiteDeer {
 namespace Editor {
@@ -17,7 +18,8 @@ namespace Editor {
 using WhiteDeer::Engine::Application;
 
 void EditorGUIManager::InitEditors() {
-  EditorRegistry<TestEditor>::Register();
+    EditorRegistry<LogWindow>::Register();
+    EditorRegistry<TestEditor>::Register();
 }
 
 void EditorGUIManager::Render() {
@@ -27,7 +29,7 @@ void EditorGUIManager::Render() {
   ImGui::NewFrame();
 
   // render all registered editors
-  for (auto editor: m_editorGUIVec) {
+  for (auto editor : m_entries) {
     editor->Render();
   }
 
@@ -36,22 +38,5 @@ void EditorGUIManager::Render() {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void EditorGUIManager::RegisterEditor(EditorGUI * editor) {
-  if (!HasEditor(editor)) {
-    m_editorGUIVec.push_back(editor);
-  }
-}
-
-void EditorGUIManager::UnRegisterEditor(EditorGUI * editor) {
-  if (HasEditor(editor)) {
-    auto& vec = m_editorGUIVec;
-    vec.erase(std::remove(vec.begin(), vec.end(), editor), vec.end());
-  }
-}
-
-bool EditorGUIManager::HasEditor(EditorGUI * editor) {
-  return std::find(m_editorGUIVec.begin(), m_editorGUIVec.end(), editor) != m_editorGUIVec.end();
-}
-
-} // namespace Editor
-} // namespace WhiteDeer
+}  // namespace Editor
+}  // namespace WhiteDeer

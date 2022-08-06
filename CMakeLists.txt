@@ -9,48 +9,42 @@ enable_testing()
 # include path
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
+macro(apply_common_config target_name)
+    # c++17
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+
+    # glfw3
+    find_package(glfw3 CONFIG REQUIRED)
+    target_link_libraries(${target_name} PRIVATE glfw)
+
+    # gl3w
+    find_package(gl3w CONFIG REQUIRED)
+    target_link_libraries(${target_name} PRIVATE unofficial::gl3w::gl3w)
+
+    # imgui
+    find_package(imgui CONFIG REQUIRED)
+    target_link_libraries(${target_name} PRIVATE imgui::imgui)
+
+    # plog
+    find_package(plog CONFIG REQUIRED)
+    target_link_libraries(${target_name} PRIVATE plog::plog)
+
+    # opengl
+    # target_link_libraries(${target_name} PRIVATE opengl32)
+endmacro(apply_common_config)
+
 # src files
 file(GLOB_RECURSE all_cpp_files src/*.cpp)
 add_executable(engine ${all_cpp_files})
-
-# c++17
-target_compile_features(engine PRIVATE cxx_std_17)
-
-# glfw3
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(engine PRIVATE glfw)
-
-# gl3w
-find_package(gl3w CONFIG REQUIRED)
-target_link_libraries(engine PRIVATE unofficial::gl3w::gl3w)
-
-# imgui
-find_package(imgui CONFIG REQUIRED)
-target_link_libraries(engine PRIVATE imgui::imgui)
-
-# opengl
-# target_link_libraries(engine PRIVATE opengl32)
+apply_common_config(engine)
 
 # test target needs remove main.cpp
 list(FILTER all_cpp_files EXCLUDE REGEX ".*main.cpp")
 file(GLOB_RECURSE all_test_files test/*.cpp)
 add_executable(test-engine ${all_cpp_files} ${all_test_files})
+apply_common_config(test-engine)
 
-# c++17
-target_compile_features(test-engine PRIVATE cxx_std_17)
-
-# glfw3
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(test-engine PRIVATE glfw)
-
-# gl3w
-find_package(gl3w CONFIG REQUIRED)
-target_link_libraries(test-engine PRIVATE unofficial::gl3w::gl3w)
-
-# imgui
-find_package(imgui CONFIG REQUIRED)
-target_link_libraries(test-engine PRIVATE imgui::imgui)
-
+# for test target only
 find_package(Catch2 CONFIG REQUIRED)
 target_link_libraries(test-engine PRIVATE Catch2::Catch2 Catch2::Catch2WithMain)
 

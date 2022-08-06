@@ -1,13 +1,43 @@
 #include <GL/gl3w.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Initializers/ConsoleInitializer.h>
 
 #include "application/application.h"
+#include "filesystem/filesystemmanager.h"
 #include "jobsystem/workers.h"
+#include "log/log.h"
 
 using WhiteDeer::Engine::Application;
+using WhiteDeer::Engine::FileSystemManager;
 using WhiteDeer::Engine::Job;
 using WhiteDeer::Engine::WorkerGroup;
 
 class MainApplication : public Application {
+ public:
+  static Application *GetInstance() {
+    static MainApplication app;
+    return &app;
+  }
+
+  virtual void Start() {
+    Application::Start();
+
+    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+    plog::init(plog::debug, &consoleAppender);
+    WorkerGroup::GetJobWorkers()->ScheduleJob(
+        [](void *i, int index) {
+          using namespace std::chrono_literals;
+          LOGD.printf("hello world %d in thread %d", index,
+                      std::this_thread::get_id());
+          std::this_thread::sleep_for(1000ms);
+        },
+        nullptr, 10,
+        [](void *data) {
+          LOGE.printf("all jobs done!");
+          FileSystemManager::GetInstance();
+        });
+  }
+
   virtual void Render() { DrawTriangle(); }
 
   void DrawTriangle() {
@@ -48,14 +78,4 @@ class MainApplication : public Application {
   }
 };
 
-int main(int, char **) {
-  WorkerGroup::GetJobWorkers()->ScheduleJob(
-      [](void *i, int index) {
-        using namespace std::chrono_literals;
-        printf("hello world %d in thread %zd\n", index,
-               std::this_thread::get_id());
-        std::this_thread::sleep_for(3000ms);
-      },
-      nullptr, 10, [](void *data) { printf("all jobs done!\n"); });
-  MainApplication::GetInstance().RunForever();
-}
+int main(int, char **) { MainApplication::GetInstance()->RunForever(); }

@@ -25,8 +25,8 @@ protected:
   bool InitGlw3Env();
   bool InitImGui();
 
-  void Start();
-  void Terminate();
+  virtual void Start();
+  virtual void Terminate();
 
   GLFWwindow *m_window;
   int m_width = 1920;
