@@ -26,5 +26,7 @@ class LocalFileSystem : public FileSystem {
 
   virtual bool Open(fs::path path) override { return true; }
 };
+
+LocalFileSystem* GetLocalFileSystem();
 }  // namespace Engine
 }  // namespace WhiteDeer

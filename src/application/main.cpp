@@ -6,11 +6,13 @@
 #include "filesystem/filesystemmanager.h"
 #include "jobsystem/workers.h"
 #include "log/log.h"
+#include "graphics/opengl/glshader.h"
 
 using WhiteDeer::Engine::Application;
 using WhiteDeer::Engine::FileSystemManager;
 using WhiteDeer::Engine::Job;
 using WhiteDeer::Engine::WorkerGroup;
+using namespace WhiteDeer::Graphics;
 
 class MainApplication : public Application {
  public:
@@ -32,7 +34,7 @@ class MainApplication : public Application {
                       std::this_thread::get_id());
         //   std::this_thread::sleep_for(10ms);
         },
-        nullptr, 100000,
+        nullptr, 10,
         [](void *data) {
           LOGE.printf("all jobs done!");
           FileSystemManager::GetInstance();
@@ -64,6 +66,9 @@ class MainApplication : public Application {
     // Give our vertices to OpenGL.
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data),
                  g_vertex_buffer_data, GL_STATIC_DRAW);
+
+    auto p_program = Program::Load("shaders/test.vs");
+    p_program->Use();
   }
 
   void Wait1() {

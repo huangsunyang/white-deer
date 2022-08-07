@@ -1,3 +1,4 @@
+#pragma once
 #include "filesystem/localfilesystem.h"
 #ifdef _WIN32
 #include <Windows.h>
@@ -17,7 +18,9 @@ class FileSystemManager : public Singleton<FileSystemManager>,
   friend class Singleton<FileSystemManager>;
 
  public:
-  static LocalFileSystem* GetLocalFileSystem() { return GetInstance()->m_localfs; }
+  static LocalFileSystem* GetLocalFileSystem() {
+    return GetInstance()->m_localfs;
+  }
 
  protected:
   FileSystemManager() {
@@ -40,5 +43,6 @@ class FileSystemManager : public Singleton<FileSystemManager>,
 
   LocalFileSystem* m_localfs;
 };
+
 }  // namespace Engine
 }  // namespace WhiteDeer
