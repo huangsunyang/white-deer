@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "filesystem/localfilesystem.h"
+#include "graphics/opengl/glerror.h"
 #include "log/log.h"
 #include "utils/common/string.h"
 
@@ -15,7 +16,7 @@ using namespace WhiteDeer::Engine;
 
 map<string, shared_ptr<Shader>> Shader::m_shaders;
 
-Shader::Shader(const string& path) {
+Shader::Shader(const string& path): m_name(path) {
   auto localfs = GetLocalFileSystem();
   auto abspath = localfs->ToAbsolute(path);
 
@@ -34,9 +35,20 @@ Shader::Shader(const string& path) {
   auto str = buffer.str();
   auto cstr = str.c_str();
   glShaderSource(m_handle, 1, &cstr, NULL);
+  glCompileShader(m_handle);
+
+  // check shader compile
+  int success;
+  char infoLog[512];
+  glGetShaderiv(m_handle, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(m_handle, 512, NULL, infoLog);
+    LOGE << "SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+  }
 }
 
 Shader::~Shader() {
+  LOGD << "deleteing shader " << m_name;
   if (m_handle) glDeleteShader(m_handle);
 }
 
@@ -53,22 +65,64 @@ void Shader::Delete(const string& path) {
   }
 }
 
+void Shader::ReloadAll() {
+  for (auto pairs : m_shaders) {
+    Shader::Load(pairs.first, true);
+  }
+}
+
 set<shared_ptr<Program>> Program::m_programs;
 
-Program::Program() { m_handle = glCreateProgram(); }
+Program::Program(const string& pathvs, const string& pathfs) {
+  m_handle = glCreateProgram();
+  _Load(pathvs, pathfs);
+}
+
+void Program::_Load(const string& pathvs, const string& pathfs) {
+  // todo: more shaders
+  m_shaders.insert(Shader::Load(pathvs));
+  m_shaders.insert(Shader::Load(pathfs));
+
+  for (auto& p : m_shaders) {
+    glAttachShader(m_handle, p->m_handle);
+  }
+  glLinkProgram(m_handle);
+
+  // check link status
+  int success;
+  char infoLog[512];
+  glGetProgramiv(m_handle, GL_LINK_STATUS, &success);
+  if (!success) {
+    glGetProgramInfoLog(m_handle, 512, NULL, infoLog);
+    LOGE << "PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
+  }
+}
 
 Program::~Program() { glDeleteProgram(m_handle); }
 
-shared_ptr<Program> Program::Load(const string& path) {
-  auto p_program = std::make_shared<Program>();
+void Program::Refresh() {
+  vector<string> vec;
+  for (auto& p : m_shaders) {
+    glDetachShader(m_handle, p->m_handle);
+    vec.push_back(p->m_name);
+  }
+  m_shaders.clear();
 
-  // todo: more shaders
-  auto p_shader = Shader::Load(path);
-  glAttachShader(p_program->m_handle, p_shader->m_handle);
-  glLinkProgram(p_program->m_handle);
+  // reload
+  _Load(vec[0], vec[1]);
+}
 
+shared_ptr<Program> Program::Load(const string& pathvs, const string& pathfs) {
+  auto p_program = std::make_shared<Program>(pathvs, pathfs);
   m_programs.insert(p_program);
   return p_program;
+}
+
+void Program::RefreshAll() {
+  Shader::ReloadAll();
+  for (auto& p : m_programs) {
+    p->Refresh();
+  }
 }
 
 }  // namespace Graphics

@@ -47,6 +47,7 @@ class MainApplication : public Application {
   }
 
   GLuint vertexbuffer;
+  shared_ptr<Program> p_program;
 
   void PrepareTriangle() {
     GLuint VertexArrayID;
@@ -67,8 +68,7 @@ class MainApplication : public Application {
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data),
                  g_vertex_buffer_data, GL_STATIC_DRAW);
 
-    auto p_program = Program::Load("shaders/test.vs");
-    p_program->Use();
+    p_program = Program::Load("package/shaders/test.vs", "package/shaders/test.fs");
   }
 
   void Wait1() {
@@ -102,6 +102,7 @@ class MainApplication : public Application {
 
     // Draw the triangle !
     // Starting from vertex 0; 3 vertices total -> 1 triangle
+    p_program->Use();
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
   }

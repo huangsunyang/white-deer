@@ -1,5 +1,8 @@
 #include "imgui.h"
 #include "editor/gui/test_editor.h"
+#include "graphics/opengl/glshader.h"
+
+using namespace WhiteDeer::Graphics;
 
 namespace WhiteDeer {
 namespace Editor {
@@ -21,8 +24,10 @@ void TestEditor::Render() { // 1. Show the big demo window
     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
     ImGui::ColorEdit3("clear color", (float *)&m_clear_color);
 
-    if (ImGui::Button("Button"))
+    if (ImGui::Button("Reload Shader")) {
       counter++;
+      Program::RefreshAll();
+    }
     ImGui::SameLine();
     ImGui::Text("counter = %d", counter);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
