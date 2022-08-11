@@ -11,7 +11,7 @@ void dostuff(sexp ctx) {
 
   /* load a file containing Scheme code */
   auto localfs = GetLocalFileSystem();
-  auto path = localfs->ToAbsolute("package/script/scheme/test.scm").string();
+  auto path = localfs->ToAbsolute("package/scripts/scheme/test.scm").string();
   obj1 = sexp_c_string(ctx, path.c_str(), -1);
   sexp_load(ctx, obj1, NULL);
 
@@ -37,7 +37,7 @@ TEST_CASE("Chibi Scheme", "Chibi") {
     sexp_push(ctx, sexp_global(ctx, SEXP_G_MODULE_PATH), SEXP_VOID);
 
     auto localfs = GetLocalFileSystem();
-    auto path = localfs->ToAbsolute("package/script/scheme/lib").string();
+    auto path = localfs->ToAbsolute("package/scripts/scheme/lib").string();
 
     sexp_car(sexp_global(ctx, SEXP_G_MODULE_PATH)) =
         sexp_c_string(ctx, path.c_str(), path.size());

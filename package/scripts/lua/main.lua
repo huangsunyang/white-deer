@@ -1,0 +1,5 @@
+print("in main.lua begin")
+print(package.path)
+require("another")
+test_call_native(1233434)
+print("in main.lua end")

@@ -11,18 +11,10 @@ namespace fs = std::filesystem;
 
 class LocalFileSystem : public FileSystem {
  public:
-  LocalFileSystem(fs::path p): FileSystem(p) {}
+  LocalFileSystem(fs::path p) : FileSystem(p) {}
 
-  virtual bool CanLocate(fs::path path) override {
-    return fs::exists(ToAbsolute(path));
-  }
-
-  virtual fs::path ToAbsolute(fs::path path) override {
-    if (!path.is_absolute()) {
-      return m_root / path;
-    }
-    return path;
-  }
+  virtual bool CanLocate(fs::path path) override;
+  virtual fs::path ToAbsolute(fs::path path) override;
 
   virtual bool Open(fs::path path) override { return true; }
 };

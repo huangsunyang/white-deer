@@ -4,6 +4,9 @@
 using namespace WhiteDeer::Engine;
 
 TEST_CASE("lua script", "[lua]") {
-    LuaManager::GetInstance();
+    REQUIRE(LuaManager::GetInstance()->DoString("print('hello world from lua!')"));
+    REQUIRE(LuaManager::GetInstance()->DoString("print(package.path)"));
+    REQUIRE(!LuaManager::GetInstance()->DoString("print(package.path)a"));
+    REQUIRE(LuaManager::GetInstance()->DoFile("main.lua"));
 }
 

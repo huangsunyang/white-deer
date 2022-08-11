@@ -19,6 +19,7 @@ find_package(plog CONFIG REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Tracy CONFIG REQUIRED)
 find_package(Lua REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 macro(apply_common_config target_name)
     # c++17
@@ -27,6 +28,7 @@ macro(apply_common_config target_name)
 
     target_link_libraries(${target_name} PRIVATE
         glfw
+        fmt::fmt
         unofficial::gl3w::gl3w
         imgui::imgui
         plog::plog
