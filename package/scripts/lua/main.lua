@@ -1,3 +1,4 @@
+require("repl")
 print("in main.lua begin")
 print(package.path)
 require("another")

@@ -11,6 +11,7 @@
 #include "application/application.h"
 #include "editor/gui/test_editor.h"
 #include "editor/gui/logwindow.h"
+#include "editor/gui/luawindow.h"
 
 namespace WhiteDeer {
 namespace Editor {
@@ -20,6 +21,7 @@ using WhiteDeer::Engine::Application;
 void EditorGUIManager::InitEditors() {
     EditorRegistry<LogWindow>::Register();
     EditorRegistry<TestEditor>::Register();
+    EditorRegistry<LuaWindow>::Register();
 }
 
 void EditorGUIManager::Render() {

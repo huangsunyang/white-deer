@@ -20,9 +20,15 @@ class LuaManager : public Singleton<LuaManager> {
 
   bool DoString(const string &code);
   bool DoFile(const string &fileName);
+  string Repl(const string& code);
+
+  // test
+  static int native_static(lua_State *);
+  int native_class(lua_State *);
 
  protected:
   LuaManager();
+  bool CheckCall(int);
 
  protected:
   lua_State *L;
