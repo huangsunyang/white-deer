@@ -5,13 +5,24 @@
 #include "utils/common/singleton.h"
 
 using std::vector;
-using WhiteDeer::Utils::Singleton;
 using WhiteDeer::Utils::Registry;
+using WhiteDeer::Utils::Singleton;
 
 namespace WhiteDeer {
 namespace Editor {
 
-class EditorGUI;
+class EditorGUI {
+ private:
+  friend class EditorGUIManager;
+
+ public:
+  virtual void Open() { m_showing = true; }
+
+ protected:
+  virtual void Render() {}  // inplement render for custom editor guis
+
+  bool m_showing = true;
+};
 
 class EditorGUIManager : public Singleton<EditorGUIManager>,
                          public Registry<EditorGUI> {
@@ -20,18 +31,8 @@ class EditorGUIManager : public Singleton<EditorGUIManager>,
   void InitEditors();
 };
 
-class EditorGUI {
- private:
-  friend class EditorGUIManager;
-
- protected:
-  EditorGUI() {}
-  virtual void Render() {}  // inplement render for custom editor guis
-  bool m_showing = true;
-};
-
 template <typename T>
-class EditorRegistry : public Singleton<T> {
+class EditorWindow : public EditorGUI, public Singleton<T> {
  public:
   static void Register() {
     EditorGUIManager::GetInstance()->Register(GetInstance());

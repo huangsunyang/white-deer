@@ -9,9 +9,11 @@
 #include <algorithm>
 
 #include "application/application.h"
-#include "editor/gui/test_editor.h"
 #include "editor/gui/logwindow.h"
 #include "editor/gui/luawindow.h"
+#include "editor/gui/mainmenu.h"
+#include "editor/gui/testwindow.h"
+#include "editor/gui/shaderwindow.h"
 
 namespace WhiteDeer {
 namespace Editor {
@@ -19,9 +21,11 @@ namespace Editor {
 using WhiteDeer::Engine::Application;
 
 void EditorGUIManager::InitEditors() {
-    EditorRegistry<LogWindow>::Register();
-    EditorRegistry<TestEditor>::Register();
-    EditorRegistry<LuaWindow>::Register();
+  MainMenu::Register();
+  LogWindow::Register();
+  TestWindow::Register();
+  LuaWindow::Register();
+  ShaderWindow::Register();
 }
 
 void EditorGUIManager::Render() {

@@ -176,7 +176,7 @@ function CodeComplete(originStr)
 
 	repeat
 		_InsertEnvKeyWithPrefix(cur_env, candidates, pre, split == ':')
-		if _IsWrapperTypeInfo(cur_env) or _IsSpecialType(cur_env) then
+		if _IsWrapperTypeInfo(cur_env) then
 			cur_env = getmetatable(cur_env)
 		else
 			cur_env =(getmetatable(cur_env) or {}).__index

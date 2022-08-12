@@ -1,6 +1,5 @@
 #include "catch2/catch_test_macros.hpp"
 #include "scriptsystem/lua/luamanager.h"
-#include <sol/sol.hpp>
 
 using namespace WhiteDeer::Engine;
 
