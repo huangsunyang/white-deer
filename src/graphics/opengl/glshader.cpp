@@ -14,7 +14,7 @@ namespace Graphics {
 using namespace WhiteDeer::Utils;
 using namespace WhiteDeer::Engine;
 
-map<string, shared_ptr<Shader>> Shader::m_shaders;
+map<string, shared_ptr<Shader>> Shader::s_shaders;
 
 Shader::Shader(const string& path): m_name(path) {
   auto localfs = GetLocalFileSystem();
@@ -53,25 +53,25 @@ Shader::~Shader() {
 }
 
 shared_ptr<Shader> Shader::Load(const string& path, bool reload) {
-  if (reload || m_shaders.find(path) == m_shaders.end()) {
-    m_shaders[path] = std::make_shared<Shader>(path);
+  if (reload || s_shaders.find(path) == s_shaders.end()) {
+    s_shaders[path] = std::make_shared<Shader>(path);
   }
-  return m_shaders[path];
+  return s_shaders[path];
 }
 
 void Shader::Delete(const string& path) {
-  if (m_shaders.find(path) == m_shaders.end()) {
-    m_shaders.erase(path);
+  if (s_shaders.find(path) == s_shaders.end()) {
+    s_shaders.erase(path);
   }
 }
 
 void Shader::ReloadAll() {
-  for (auto pairs : m_shaders) {
+  for (auto pairs : s_shaders) {
     Shader::Load(pairs.first, true);
   }
 }
 
-set<shared_ptr<Program>> Program::m_programs;
+set<shared_ptr<Program>> Program::s_programs;
 
 Program::Program(const string& pathvs, const string& pathfs) {
   m_handle = glCreateProgram();
@@ -113,14 +113,15 @@ void Program::Refresh() {
 }
 
 shared_ptr<Program> Program::Load(const string& pathvs, const string& pathfs) {
-  auto p_program = std::make_shared<Program>(pathvs, pathfs);
-  m_programs.insert(p_program);
+  Program * program = new Program(pathvs, pathfs);
+  shared_ptr<Program> p_program(program);
+  s_programs.insert(p_program);
   return p_program;
 }
 
 void Program::RefreshAll() {
   Shader::ReloadAll();
-  for (auto& p : m_programs) {
+  for (auto& p : s_programs) {
     p->Refresh();
   }
 }
