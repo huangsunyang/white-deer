@@ -70,11 +70,8 @@ class LogWindow : public EditorWindow<LogWindow> {
         counter++;
       }
     }
-    ImGui::End();
-
-    // Actually call in the regular Log helper (which will Begin() into the same
-    // window as we just did)
     m_logscroll.Draw("Log Window", &m_showing);
+    ImGui::End();
   }
 
   TextScroll m_logscroll;

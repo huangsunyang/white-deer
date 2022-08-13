@@ -11,7 +11,7 @@ namespace WhiteDeer {
 namespace Editor {
 
 class ShaderWindow : public EditorWindow<ShaderWindow> {
- public:
+ protected:
   friend class Singleton<ShaderWindow>;
   virtual void Render() {
     if (ImGui::Begin("Shader Window", &m_showing)) {

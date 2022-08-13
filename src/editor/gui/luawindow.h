@@ -16,13 +16,12 @@ class LuaWindow : public EditorWindow<LuaWindow> {
  public:
   friend class Singleton<LuaWindow>;
   virtual void Render() {
-    if (ImGui::Begin("Lua Window", &m_showing)) {
+    if (m_showing) {
+      ImGui::Begin("Lua Window", &m_showing);
       ShowLuaGCMemInfo();
       ShowInputField();
-      ImGui::End();
-
-      // log scroll
       m_textscroll.Draw("Lua Window", &m_showing);
+      ImGui::End();
     }
   };
 

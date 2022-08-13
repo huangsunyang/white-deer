@@ -68,17 +68,6 @@ bool Application::InitImGui() {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  auto localfs = FileSystemManager::GetLocalFileSystem();
-  auto fontPath = localfs->ToAbsolute("c:/windows/fonts/deng.ttf");
-  LOGD.printf("loading font: %s", fontPath.string().c_str());
-  io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
-  // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable
-  // Keyboard Controls io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //
-  // Enable Gamepad Controls
-
-  // Setup Dear ImGui style
-  ImGui::StyleColorsDark();
 
   // Setup Platform/Renderer backends
   const char *glsl_version = "#version 130";

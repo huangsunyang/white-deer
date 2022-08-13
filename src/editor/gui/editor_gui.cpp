@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "filesystem/localfilesystem.h"
 #include "application/application.h"
 #include "editor/gui/logwindow.h"
 #include "editor/gui/luawindow.h"
@@ -18,14 +19,24 @@
 namespace WhiteDeer {
 namespace Editor {
 
+using WhiteDeer::Engine::GetLocalFileSystem;
 using WhiteDeer::Engine::Application;
 
 void EditorGUIManager::InitEditors() {
+  ImGuiIO &io = ImGui::GetIO();
+  auto fontPath = GetLocalFileSystem()->ToAbsolute("c:/windows/fonts/deng.ttf");
+  LOGD.printf("loading font: %s", fontPath.string().c_str());
+  io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
+
   MainMenu::Register();
-  LogWindow::Register();
   TestWindow::Register();
-  LuaWindow::Register();
   ShaderWindow::Register();
+  LogWindow::Register();
+  LuaWindow::Register();
 }
 
 void EditorGUIManager::Render() {
@@ -33,6 +44,9 @@ void EditorGUIManager::Render() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
+
+  // full screen dock space
+  ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
   // render all registered editors
   for (auto editor : m_entries) {
