@@ -24,6 +24,7 @@ protected:
   bool InitGlewEnv();
   bool InitGlw3Env();
   bool InitImGui();
+  void InitInput();
 
   virtual void Start();
   virtual void Terminate();

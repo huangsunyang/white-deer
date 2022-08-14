@@ -1,3 +1,4 @@
+#pragma once
 #include <GL/gl3w.h>
 
 #include "log/log.h"
@@ -5,7 +6,7 @@
 namespace WhiteDeer {
 namespace Graphics {
 
-std::string CheckGLError_() {
+inline std::string CheckGLError_() {
   GLenum errorCode;
   std::string error;
   while ((errorCode = glGetError()) != GL_NO_ERROR) {

@@ -12,6 +12,7 @@
 #include "imgui_impl_opengl3.h"
 #include "log/log.h"
 #include "filesystem/filesystemmanager.h"
+#include "ticktime/timemanager.h"
 
 namespace WhiteDeer {
 namespace Engine {
@@ -78,10 +79,24 @@ bool Application::InitImGui() {
   return true;
 }
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+
+}
+
+void keyboard_callback() {
+
+}
+
+void Application::InitInput() {
+    // glfwSetCursorPosCallback(m_window, mouse_callback);
+}
+
 void Application::Start() {
   assert(InitGlewEnv());
   assert(InitGlw3Env());
   assert(InitImGui());
+
+  InitInput();
 }
 
 void Application::Terminate() {
@@ -102,6 +117,13 @@ void Application::MainLoop() {
   GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
   glClearBufferfv(GL_COLOR, 0, whiteColor);
 
+  // depth test
+  glEnable(GL_DEPTH_TEST);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  TimeManager::GetInstance()->Tick();
+
+  // todo: render to be tick func
   Render();
 
   // render editor gui

@@ -1,13 +1,19 @@
 #pragma once
+#include <imgui.h>
+
+#include <glm/glm.hpp>
+
+#include "camera/camera.h"
 #include "editor/gui/editor_gui.h"
 #include "graphics/opengl/glshader.h"
 
 using namespace WhiteDeer::Graphics;
+using namespace WhiteDeer::Engine;
 
 namespace WhiteDeer {
 namespace Editor {
 
-class TestWindow: public EditorWindow<TestWindow> {
+class TestWindow : public EditorWindow<TestWindow> {
  protected:
   bool m_show_demo_window = true;
   bool m_show_another_window = false;
@@ -38,6 +44,12 @@ class TestWindow: public EditorWindow<TestWindow> {
       ImGui::Text("counter = %d", counter);
       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                   1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+      Camera *camera = CameraManager::GetInstance()->GetDefaultCamera();
+      if (camera) {
+        ImGui::SliderFloat3("target pos", &camera->GetTargetPos()[0], -5.0f, 5.0f);
+        ImGui::SliderFloat3("camera pos", &camera->GetPos()[0], -5.0f, 5.0f);
+      }
       ImGui::End();
     }
 

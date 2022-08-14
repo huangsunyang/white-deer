@@ -14,20 +14,23 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/chibi-scheme-0.10)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(gl3w CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(plog CONFIG REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Tracy CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 
 macro(apply_common_config target_name)
     # c++17
     target_compile_features(${target_name} PRIVATE cxx_std_17)
-    target_include_directories(${target_name} PRIVATE ${LUA_INCLUDE_DIR})
+    target_include_directories(${target_name} PRIVATE ${LUA_INCLUDE_DIR} ${STB_INCLUDE_DIRS})
 
     target_link_libraries(${target_name} PRIVATE
         glfw
+        glm::glm
         fmt::fmt
         unofficial::gl3w::gl3w
         imgui::imgui

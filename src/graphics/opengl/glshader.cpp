@@ -16,7 +16,7 @@ using namespace WhiteDeer::Engine;
 
 map<string, shared_ptr<Shader>> Shader::s_shaders;
 
-Shader::Shader(const string& path): m_name(path) {
+Shader::Shader(const string& path) : m_name(path) {
   auto localfs = GetLocalFileSystem();
   auto abspath = localfs->ToAbsolute(path);
 
@@ -73,15 +73,15 @@ void Shader::ReloadAll() {
 
 set<shared_ptr<Program>> Program::s_programs;
 
-Program::Program(const string& pathvs, const string& pathfs) {
-  m_handle = glCreateProgram();
-  _Load(pathvs, pathfs);
+void Program::_Load(std::initializer_list<string> paths) {
+  vector<string> temp(paths);
+  _Load(temp);
 }
 
-void Program::_Load(const string& pathvs, const string& pathfs) {
-  // todo: more shaders
-  m_shaders.insert(Shader::Load(pathvs));
-  m_shaders.insert(Shader::Load(pathfs));
+void Program::_Load(const vector<string>& paths) {
+  for (auto& path : paths) {
+    m_shaders.insert(Shader::Load(path));
+  }
 
   for (auto& p : m_shaders) {
     glAttachShader(m_handle, p->m_handle);
@@ -96,6 +96,18 @@ void Program::_Load(const string& pathvs, const string& pathfs) {
     glGetProgramInfoLog(m_handle, 512, NULL, infoLog);
     LOGE << "PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
   }
+
+  // query all uniforms
+  int count;
+  glGetProgramiv(m_handle, GL_ACTIVE_UNIFORMS, &count);
+  for (int i = 0; i < count; i++) {
+    char name[32];
+    GLint length;
+    GLsizei size;
+    GLenum type;
+    glGetActiveUniform(m_handle, (GLuint)i, 32, &length, &size, &type, name);
+    LOGD.printf("Uniform #%d Type: %u Name: %s Length: %d Size: %d\n", i, type, name, length, size);
+  }
 }
 
 Program::~Program() { glDeleteProgram(m_handle); }
@@ -109,14 +121,7 @@ void Program::Refresh() {
   m_shaders.clear();
 
   // reload
-  _Load(vec[0], vec[1]);
-}
-
-shared_ptr<Program> Program::Load(const string& pathvs, const string& pathfs) {
-  Program * program = new Program(pathvs, pathfs);
-  shared_ptr<Program> p_program(program);
-  s_programs.insert(p_program);
-  return p_program;
+  _Load(vec);
 }
 
 void Program::RefreshAll() {

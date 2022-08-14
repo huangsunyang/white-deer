@@ -28,7 +28,7 @@ class LuaWindow : public EditorWindow<LuaWindow> {
  protected:
   void ShowLuaGCMemInfo() {
     // lua gc memory
-    static long long lastRecordTime = 0;
+    static double lastRecordTime = 0;
     static string luaMem;
 
     auto currentTime = TimeManager::GetInstance()->GetGameTime();
