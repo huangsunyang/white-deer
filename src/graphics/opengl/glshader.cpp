@@ -106,7 +106,8 @@ void Program::_Load(const vector<string>& paths) {
     GLsizei size;
     GLenum type;
     glGetActiveUniform(m_handle, (GLuint)i, 32, &length, &size, &type, name);
-    LOGD.printf("Uniform #%d Type: %u Name: %s Length: %d Size: %d\n", i, type, name, length, size);
+    LOGD.printf("Uniform #%d Type: %u Name: %s Length: %d Size: %d\n", i, type,
+                name, length, size);
   }
 }
 
@@ -133,3 +134,17 @@ void Program::RefreshAll() {
 
 }  // namespace Graphics
 }  // namespace WhiteDeer
+
+using namespace WhiteDeer::Graphics;
+RTTR_REGISTRATION {
+  rttr::registration::class_<Program>("WhiteDeer::Graphics::Program")
+      .property("shaders", &Program::m_shaders,
+                rttr::registration::private_access)
+      .property("handle", &Program::m_handle,
+                rttr::registration::private_access);
+
+  rttr::registration::class_<Shader>("WhiteDeer::Graphics::Shader")
+      .property("name", &Shader::m_name, rttr::registration::private_access)
+      .property("handle", &Shader::m_handle,
+                rttr::registration::private_access);
+}

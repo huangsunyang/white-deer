@@ -5,6 +5,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <map>
 #include <memory>
+#include <rttr/registration>
+#include <rttr/registration_friend>
 #include <set>
 #include <string>
 #include <vector>
@@ -43,6 +45,9 @@ class Shader {
 
   static map<string, shared_ptr<Shader>> s_shaders;
   //   static map<GLuint, shared_ptr<Shader>> m_shaders;
+
+  RTTR_ENABLE()
+  RTTR_REGISTRATION_FRIEND
 };
 
 class Program {
@@ -104,6 +109,9 @@ class Program {
   set<shared_ptr<Shader>> m_shaders;
 
   static set<shared_ptr<Program>> s_programs;
+
+  RTTR_ENABLE()
+  RTTR_REGISTRATION_FRIEND
 };
 
 }  // namespace Graphics

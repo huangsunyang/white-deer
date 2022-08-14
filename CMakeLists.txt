@@ -21,6 +21,7 @@ find_package(Threads REQUIRED)
 find_package(Tracy CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(rttr CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 
 macro(apply_common_config target_name)
@@ -32,6 +33,7 @@ macro(apply_common_config target_name)
         glfw
         glm::glm
         fmt::fmt
+        RTTR::Core
         unofficial::gl3w::gl3w
         imgui::imgui
         plog::plog

@@ -15,6 +15,9 @@ namespace Graphics {
 class Texture {
  public:
   static shared_ptr<Texture> Load(const string& path) {
+    if (s_textures.find(path) != s_textures.end()) {
+      return s_textures[path];
+    }
     shared_ptr<Texture> p_texture(new Texture(path));
     s_textures[path] = p_texture;
     return p_texture;
