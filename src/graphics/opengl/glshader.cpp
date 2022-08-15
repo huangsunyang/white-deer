@@ -62,6 +62,8 @@ void Shader::ReloadAll() {
   for (auto pairs : s_entries) {
     temp.push_back(pairs.first);
   }
+  s_entries.clear();
+
   for (auto path : temp) {
     Shader::GetOrLoad(path);
   }

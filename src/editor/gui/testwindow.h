@@ -47,8 +47,8 @@ class TestWindow : public EditorWindow<TestWindow> {
 
       Camera *camera = CameraManager::GetInstance()->GetDefaultCamera();
       if (camera) {
-        ImGui::SliderFloat3("target pos", &camera->GetTargetPos()[0], -5.0f, 5.0f);
-        ImGui::SliderFloat3("camera pos", &camera->GetPos()[0], -5.0f, 5.0f);
+        ImGui::SliderFloat3("target pos", &camera->GetTargetPos()[0], -1.0f, 1.0f);
+        ImGui::SliderFloat3("camera pos", &camera->GetPos()[0], -1.0f, 1.0f);
       }
       ImGui::End();
     }

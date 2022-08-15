@@ -1,21 +1,34 @@
 #pragma once
 
 #include <GL/gl3w.h>
+
+#include <string>
 #include <vector>
+
+#include "utils/common/registry.h"
+
+using std::string;
 using std::vector;
+using WhiteDeer::Utils::StaticNamedPool;
 
 namespace WhiteDeer {
 namespace Graphics {
 
-class Mesh {
+class Mesh : public StaticNamedPool<string, Mesh> {
+  friend class StaticNamedPool<string, Mesh>;
+
  public:
+  void Draw();
 
  protected:
-   void Load();
-   void LoadPly();
+  Mesh() {}
+  void load(const string& path);
+  void loadPly(const string& path);
+  void prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo);
 
-   vector<float> m_vbo;
-   vector<float> m_ebo;
+  GLuint m_vbo;
+  GLuint m_ebo;
+  GLuint m_facecount;
 };
 
 }  // namespace Graphics

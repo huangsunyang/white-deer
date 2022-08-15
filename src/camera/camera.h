@@ -34,6 +34,8 @@ class Camera {
                             100.0f);
   }
 
+  void SetPos(glm::vec3 p) {m_pos = p;}
+  void SetTargetPos(glm::vec3 p) {m_target = p;}
   glm::vec3& GetPos() { return m_pos; }
   glm::vec3& GetTargetPos() { return m_target; }
 
