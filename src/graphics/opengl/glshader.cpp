@@ -9,14 +9,19 @@
 #include "utils/common/string.h"
 
 namespace WhiteDeer {
+
+namespace Utils {
+using namespace WhiteDeer::Graphics;
+map<string, shared_ptr<Shader>> Shader::s_entries;
+}  // namespace Utils
+
 namespace Graphics {
 
 using namespace WhiteDeer::Utils;
 using namespace WhiteDeer::Engine;
 
-map<string, shared_ptr<Shader>> Shader::s_shaders;
-
-Shader::Shader(const string& path) : m_name(path) {
+void Shader::load(const string& path) {
+  m_name = path;
   auto localfs = GetLocalFileSystem();
   auto abspath = localfs->ToAbsolute(path);
 
@@ -52,35 +57,26 @@ Shader::~Shader() {
   if (m_handle) glDeleteShader(m_handle);
 }
 
-shared_ptr<Shader> Shader::Load(const string& path, bool reload) {
-  if (reload || s_shaders.find(path) == s_shaders.end()) {
-    s_shaders[path] = std::make_shared<Shader>(path);
-  }
-  return s_shaders[path];
-}
-
-void Shader::Delete(const string& path) {
-  if (s_shaders.find(path) == s_shaders.end()) {
-    s_shaders.erase(path);
-  }
-}
-
 void Shader::ReloadAll() {
-  for (auto pairs : s_shaders) {
-    Shader::Load(pairs.first, true);
+  vector<string> temp;
+  for (auto pairs : s_entries) {
+    temp.push_back(pairs.first);
+  }
+  for (auto path : temp) {
+    Shader::GetOrLoad(path);
   }
 }
 
 set<shared_ptr<Program>> Program::s_programs;
 
-void Program::_Load(std::initializer_list<string> paths) {
+void Program::load(std::initializer_list<string> paths) {
   vector<string> temp(paths);
-  _Load(temp);
+  load(temp);
 }
 
-void Program::_Load(const vector<string>& paths) {
+void Program::load(const vector<string>& paths) {
   for (auto& path : paths) {
-    m_shaders.insert(Shader::Load(path));
+    m_shaders.insert(Shader::GetOrLoad(path));
   }
 
   for (auto& p : m_shaders) {
@@ -122,7 +118,7 @@ void Program::Refresh() {
   m_shaders.clear();
 
   // reload
-  _Load(vec);
+  load(vec);
 }
 
 void Program::RefreshAll() {

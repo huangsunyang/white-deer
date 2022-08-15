@@ -13,6 +13,7 @@
 
 #include "graphics/opengl/glTexture.h"
 #include "graphics/opengl/glerror.h"
+#include "utils/common/registry.h"
 #include "utils/common/singleton.h"
 
 using std::shared_ptr;
@@ -24,27 +25,26 @@ namespace Graphics {
 
 class Program;
 
-class Shader {
+class Shader : public StaticNamedPool<string, Shader> {
   friend class Program;
+  friend class StaticNamedPool<string, Shader>;
 
  public:
-  Shader(const string &);
   ~Shader();
+
   GLuint GetHandle() { return m_handle; }
   string GetName() { return m_name; }
 
-  static shared_ptr<Shader> Load(const string &, bool = false);
-  static auto &GetAllShaders() { return s_shaders; }
-  static void Delete(const string &);
+  static auto &GetAllShaders() { return GetEntries(); }
   static void ReloadAll();
 
  protected:
+  Shader() {}
+  void load(const string &);
+
   string m_name;
   GLuint m_handle;
   //   set<shared_ptr<Program>> m_programs;
-
-  static map<string, shared_ptr<Shader>> s_shaders;
-  //   static map<GLuint, shared_ptr<Shader>> m_shaders;
 
   RTTR_ENABLE()
   RTTR_REGISTRATION_FRIEND
@@ -85,7 +85,8 @@ class Program {
  public:
   template <typename... Args>
   static shared_ptr<Program> Load(const Args... paths) {
-    shared_ptr<Program> p_program(new Program(paths...));
+    shared_ptr<Program> p_program(new Program);
+    p_program->load({paths...});
     s_programs.insert(p_program);
     return p_program;
   }
@@ -97,13 +98,8 @@ class Program {
  protected:
   Program() { m_handle = glCreateProgram(); }
 
-  template <typename... Args>
-  Program(Args &&...path) : Program() {
-    _Load({std::forward<Args>(path)...});
-  }
-
-  void _Load(std::initializer_list<string> paths);
-  void _Load(const vector<string> &paths);
+  void load(std::initializer_list<string> paths);
+  void load(const vector<string> &paths);
 
   GLuint m_handle;
   set<shared_ptr<Shader>> m_shaders;

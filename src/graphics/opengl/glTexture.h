@@ -5,24 +5,20 @@
 #include <memory>
 #include <string>
 
+#include "utils/common/registry.h"
+
 using std::map;
 using std::shared_ptr;
 using std::string;
+using WhiteDeer::Utils::StaticNamedPool;
 
 namespace WhiteDeer {
 namespace Graphics {
 
-class Texture {
- public:
-  static shared_ptr<Texture> Load(const string& path) {
-    if (s_textures.find(path) != s_textures.end()) {
-      return s_textures[path];
-    }
-    shared_ptr<Texture> p_texture(new Texture(path));
-    s_textures[path] = p_texture;
-    return p_texture;
-  }
+class Texture : public StaticNamedPool<string, Texture> {
+  friend class StaticNamedPool<string, Texture>;
 
+ public:
   void Use(int index = 0) const {
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D, m_handle);
@@ -31,13 +27,10 @@ class Texture {
 
  protected:
   Texture() { glGenTextures(1, &m_handle); }
-  Texture(const string& path) : Texture() { _Load(path); }
-  void _Load(const string& path);
+  void load(const string& path);
 
   GLuint m_handle;
   string m_path;
-
-  static map<string, shared_ptr<Texture>> s_textures;
 };
 
 }  // namespace Graphics

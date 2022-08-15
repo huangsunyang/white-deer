@@ -11,6 +11,7 @@
 #include "filesystem/filesystemmanager.h"
 #include "graphics/opengl/glTexture.h"
 #include "graphics/opengl/glshader.h"
+#include "graphics/opengl/glmesh.h"
 #include "jobsystem/workers.h"
 #include "log/log.h"
 
@@ -144,7 +145,7 @@ class MainApplication : public Application {
 
     p_program =
         Program::Load("package/shaders/test.vs", "package/shaders/test.fs");
-    p_texture = Texture::Load("package/textures/flower-pattern.jpg");
+    p_texture = Texture::GetOrLoad("package/textures/flower-pattern.jpg");
     camera = CameraManager::GetInstance()->CreateCamera();
   }
 

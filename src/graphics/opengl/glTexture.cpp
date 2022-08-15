@@ -10,11 +10,17 @@
 using WhiteDeer::Engine::GetLocalFileSystem;
 
 namespace WhiteDeer {
+
+namespace Utils {
+
+using Graphics::Texture;
+map<string, shared_ptr<Texture>> Texture::s_entries;
+
+}  // namespace Utils
+
 namespace Graphics {
 
-map<string, shared_ptr<Texture>> Texture::s_textures;
-
-void Texture::_Load(const string& path) {
+void Texture::load(const string& path) {
   auto abspath = GetLocalFileSystem()->ToAbsolute(path).string();
 
   int width, height, nrChannels;
@@ -34,7 +40,8 @@ void Texture::_Load(const string& path) {
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
