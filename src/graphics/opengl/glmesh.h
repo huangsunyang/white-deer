@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "graphics/opengl/glvertexattrib.h"
+#include "graphics/opengl/gltexture.h"
 #include "utils/common/registry.h"
 
 using std::string;
@@ -24,11 +26,16 @@ class Mesh : public StaticNamedPool<string, Mesh> {
   Mesh() {}
   void load(const string& path);
   void loadPly(const string& path);
+  void loadObj(const string& path);
   void prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo);
+  void setVertexAttrib();
 
   GLuint m_vbo;
   GLuint m_ebo;
   GLuint m_facecount;
+
+  VertexAttribList m_attribs;
+  vector<shared_ptr<Texture>> m_textures;
 };
 
 }  // namespace Graphics
