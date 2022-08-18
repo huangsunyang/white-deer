@@ -29,7 +29,6 @@ class Registry {
 // use K to index shared_ptr<V>
 template <typename K, typename V>
 class StaticNamedPool {
-  using RAWPTR = V*;
   using PTR = shared_ptr<V>;
   using CONTAINER = map<K, PTR>;
 
@@ -38,14 +37,17 @@ class StaticNamedPool {
 
   template <typename... Args>
   static PTR GetOrLoad(const K& name, Args... args) {
-    if (s_entries.find(name) != s_entries.end()) {
-      return s_entries[name];
+    static int s_nameindex = 0;
+    string newname = name;
+    if (name.empty()) {
+      newname = "_anonymous" + std::to_string(s_nameindex++);
     }
-    RAWPTR rawptr = new V;
-    rawptr->load(name, args...);
-    PTR ptr(rawptr);
-    s_entries[name] = ptr;
-    return ptr;
+
+    if (s_entries.find(newname) == s_entries.end()) {
+      s_entries[newname] = PTR(new V(newname, args...));
+    }
+
+    return s_entries[newname];
   }
 
   static void Delete(const K& name) {

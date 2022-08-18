@@ -20,20 +20,25 @@ map<string, shared_ptr<Texture>> Texture::s_entries;
 
 namespace Graphics {
 
+Texture::~Texture() {
+  glDeleteTextures(1, &m_handle);
+}
+
 void Texture::load(const string& path) {
   auto abspath = GetLocalFileSystem()->ToAbsolute(path).string();
 
-  int width, height, nrChannels;
+  int nrChannels;
   stbi_set_flip_vertically_on_load(true);
   unsigned char* data =
-      stbi_load(abspath.c_str(), &width, &height, &nrChannels, 0);
+      stbi_load(abspath.c_str(), &m_width, &m_height, &nrChannels, 0);
   if (!data) {
     LOGE << "Faild to load texture " << path;
     return;
   }
 
+  glGenTextures(1, &m_handle);
   glBindTexture(GL_TEXTURE_2D, m_handle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);

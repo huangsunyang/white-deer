@@ -104,7 +104,7 @@ void Program::load(const vector<string>& paths) {
     GLsizei size;
     GLenum type;
     glGetActiveUniform(m_handle, (GLuint)i, 32, &length, &size, &type, name);
-    LOGD.printf("Uniform #%d Type: %u Name: %s Length: %d Size: %d\n", i, type,
+    LOGD.printf("Uniform #%d Type: %u Name: %s Length: %d Size: %d", i, type,
                 name, length, size);
   }
 }

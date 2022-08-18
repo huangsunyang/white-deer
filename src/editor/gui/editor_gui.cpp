@@ -8,25 +8,28 @@
 
 #include <algorithm>
 
-#include "filesystem/localfilesystem.h"
 #include "application/application.h"
+#include "editor/gui/gamewindow.h"
 #include "editor/gui/logwindow.h"
 #include "editor/gui/luawindow.h"
 #include "editor/gui/mainmenu.h"
-#include "editor/gui/testwindow.h"
 #include "editor/gui/shaderwindow.h"
+#include "editor/gui/testwindow.h"
+#include "filesystem/localfilesystem.h"
 
 namespace WhiteDeer {
 namespace Editor {
 
-using WhiteDeer::Engine::GetLocalFileSystem;
 using WhiteDeer::Engine::Application;
+using WhiteDeer::Engine::GetLocalFileSystem;
 
 void EditorGUIManager::InitEditors() {
   ImGuiIO &io = ImGui::GetIO();
   auto fontPath = GetLocalFileSystem()->ToAbsolute("c:/windows/fonts/deng.ttf");
   LOGD.printf("loading font: %s", fontPath.string().c_str());
-  io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+  io.Fonts->AddFontFromFileTTF(
+      fontPath.string().c_str(), 18, nullptr,
+      io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
   // Setup Dear ImGui style
@@ -37,6 +40,7 @@ void EditorGUIManager::InitEditors() {
   ShaderWindow::Register();
   LogWindow::Register();
   LuaWindow::Register();
+  GameWindow::Register();
 }
 
 void EditorGUIManager::Render() {

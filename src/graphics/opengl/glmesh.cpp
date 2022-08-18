@@ -157,6 +157,8 @@ void Mesh::loadObj(const string& path) {
 
 void Mesh::prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo,
                        const VertexAttribList& attribs) {
+  m_attribs = attribs;
+
   // submit vbo buffer
   glGenBuffers(1, &m_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, m_vbo);

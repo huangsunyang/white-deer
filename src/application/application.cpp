@@ -7,17 +7,20 @@
 #include <cassert>
 #include <cstdio>
 
+#include "camera/camera.h"
 #include "editor/gui/editor_gui.h"
+#include "editor/gui/gamewindow.h"
+#include "filesystem/filesystemmanager.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "log/log.h"
-#include "filesystem/filesystemmanager.h"
 #include "ticktime/timemanager.h"
 
 namespace WhiteDeer {
 namespace Engine {
 
 using WhiteDeer::Editor::EditorGUIManager;
+using WhiteDeer::Editor::GameWindow;
 
 void Application::RunForever() {
   Start();
@@ -79,16 +82,12 @@ bool Application::InitImGui() {
   return true;
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {}
 
-}
-
-void keyboard_callback() {
-
-}
+void keyboard_callback() {}
 
 void Application::InitInput() {
-    // glfwSetCursorPosCallback(m_window, mouse_callback);
+  // glfwSetCursorPosCallback(m_window, mouse_callback);
 }
 
 void Application::Start() {
@@ -97,6 +96,9 @@ void Application::Start() {
   assert(InitImGui());
 
   InitInput();
+
+  m_framebuffer = FrameBuffer::CreateFrameBuffer(1920, 1080);
+  GameWindow::GetInstance()->AddView(m_framebuffer);
 }
 
 void Application::Terminate() {
@@ -113,7 +115,12 @@ void Application::MainLoop() {
   glfwPollEvents();
 
   glfwGetFramebufferSize(m_window, &m_width, &m_height);
-  glViewport(0, 0, m_width, m_height);
+
+  TimeManager::GetInstance()->Tick();
+
+  // todo: use camera and render loop
+  m_framebuffer->Bind();
+  glViewport(0, 0, m_framebuffer->GetWidth(), m_framebuffer->GetHeight());
   GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
   glClearBufferfv(GL_COLOR, 0, whiteColor);
 
@@ -121,10 +128,9 @@ void Application::MainLoop() {
   glEnable(GL_DEPTH_TEST);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  TimeManager::GetInstance()->Tick();
-
   // todo: render to be tick func
   Render();
+  m_framebuffer->UnBind();
 
   // render editor gui
   EditorGUIManager::GetInstance()->Render();

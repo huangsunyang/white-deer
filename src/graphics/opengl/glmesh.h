@@ -23,7 +23,11 @@ class Mesh : public StaticNamedPool<string, Mesh> {
   void Draw();
 
  protected:
-  Mesh() {}
+  Mesh(const string& path) { load(path); }
+  Mesh(const string& noname, const vector<GLfloat>& points,
+       const VertexAttribList& attribs) {
+    prepareData(points, {}, attribs);
+  }
   void load(const string& path);
   void loadPly(const string& path);
   void loadObj(const string& path);

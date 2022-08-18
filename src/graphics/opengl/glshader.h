@@ -39,7 +39,7 @@ class Shader : public StaticNamedPool<string, Shader> {
   static void ReloadAll();
 
  protected:
-  Shader() {}
+  Shader(const string &s) { load(s); }
   void load(const string &);
 
   string m_name;
@@ -74,6 +74,12 @@ class Program {
   void SetUniformTexture(const string &name, const Texture &tex,
                          int index = 0) {
     tex.Use(index);
+    glUniform1i(GetUniformLocation(name), index);
+  }
+
+  void SetUniformTexture(const string &name, GLuint handle, int index = 0) {
+    glActiveTexture(GL_TEXTURE0 + index);
+    glBindTexture(GL_TEXTURE_2D, handle);
     glUniform1i(GetUniformLocation(name), index);
   }
 

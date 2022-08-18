@@ -19,18 +19,22 @@ class Texture : public StaticNamedPool<string, Texture> {
   friend class StaticNamedPool<string, Texture>;
 
  public:
+  virtual ~Texture();
   void Use(int index = 0) const {
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D, m_handle);
   }
-  GLuint GetHandle() { return m_handle; }
+  GLuint GetHandle() const { return m_handle; }
 
  protected:
-  Texture() { glGenTextures(1, &m_handle); }
+  Texture() {}
+  Texture(const string& path) { load(path); }
   void load(const string& path);
 
   GLuint m_handle;
   string m_path;
+  int m_width;
+  int m_height;
 };
 
 }  // namespace Graphics
