@@ -114,14 +114,16 @@ void Application::Terminate() {
 void Application::MainLoop() {
   glfwPollEvents();
 
+  // window buffer
   glfwGetFramebufferSize(m_window, &m_width, &m_height);
+  GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
+  glClearBufferfv(GL_COLOR, 0, whiteColor);
 
   TimeManager::GetInstance()->Tick();
 
   // todo: use camera and render loop
   m_framebuffer->Bind();
   glViewport(0, 0, m_framebuffer->GetWidth(), m_framebuffer->GetHeight());
-  GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
   glClearBufferfv(GL_COLOR, 0, whiteColor);
 
   // depth test

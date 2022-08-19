@@ -21,17 +21,24 @@ namespace Editor {
 class GameWindow : public EditorWindow<GameWindow> {
  public:
   friend class Singleton<GameWindow>;
+
   virtual void Render() {
     for (int i = 0; i < m_framebuffers.size(); i++) {
       string name = "Game Windows";
       if (i > 0) {
         name += std::to_string(i);
       }
-      ImGui::Begin(name.c_str(), &m_showing);
+
+      // todo: why always sth. outside window?
+      ImGui::Begin(
+          name.c_str(), &m_showing,
+          ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
       ImVec2 wsize = ImGui::GetWindowSize();
 
       // todo: move to render loop
-      CameraManager::GetInstance()->GetDefaultCamera()->SetAspect(wsize.x / wsize.y);
+      Camera* camera = CameraManager::GetInstance()->GetDefaultCamera();
+      ProcessInput(camera);
+      camera->SetAspect(wsize.x / wsize.y);
       m_framebuffers[0]->Resize((int)wsize.x, (int)wsize.y);
 
       ImGui::Image((ImTextureID)(size_t)m_framebuffers[0]->GetTextureHandle(),
@@ -43,6 +50,29 @@ class GameWindow : public EditorWindow<GameWindow> {
   void AddView(shared_ptr<FrameBuffer> f) { m_framebuffers.push_back(f); }
 
  protected:
+  void ProcessInput(Camera* camera) {
+    ImVec2 wsize = ImGui::GetWindowSize();
+    auto io = ImGui::GetIO();
+
+    // rotate camera
+    auto left = ImGuiMouseButton_Left;
+    if (io.MouseDown[left]) {
+      camera->Rotate(-io.MouseDelta.x / wsize.x * 2, io.MouseDelta.y / wsize.y * 2);
+    }
+
+    // move camera x y direction
+    auto middle = ImGuiMouseButton_Middle;
+    if (io.MouseDown[middle]) {
+      LOGE << io.MouseDelta.x << ' ' << io.MouseDelta.y;
+      camera->Move(io.MouseDelta.x / wsize.x * 20, io.MouseDelta.y / wsize.y * 20, 0);
+    }
+
+    // move camera back and forth
+    if (io.MouseWheel != 0) {
+      camera->Move(0, 0, io.MouseWheel * 2);
+    }
+  }
+
   vector<shared_ptr<FrameBuffer>> m_framebuffers;
 };
 

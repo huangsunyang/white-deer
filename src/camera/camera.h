@@ -20,20 +20,21 @@ class Camera {
 
   void SetPos(glm::vec3 p) { m_pos = p; }
   void SetAspect(float aspect) { m_aspect = aspect; }
-  void SetTargetPos(glm::vec3 p) { m_target = p; }
+  void SetTargetPos(glm::vec3 p) { m_dir = glm::normalize(p - m_pos); }
   glm::vec3& GetPos() { return m_pos; }
-  glm::vec3& GetTargetPos() { return m_target; }
+  glm::vec3 GetTargetPos() { return m_dir + m_pos; }
+
+  void Move(float, float, float);
+  void Rotate(float, float);
 
  protected:
   glm::vec3 m_pos = {0, 0, 1};
-  glm::vec3 m_target = {0, 0, 0};
+  glm::vec3 m_dir = {0, 0, -1};
+
   float m_fov = 45.0f;
   float m_aspect = 1920.0f / 1080.0f;
 
   float m_speed = 0.1f;
-
-  // todo: camera move mode
-  bool m_lockTarget = false;
 };
 
 class CameraManager : public Singleton<CameraManager> {
