@@ -8,20 +8,22 @@
 #include "graphics/opengl/gltexture.h"
 #include "graphics/opengl/glvertexattrib.h"
 #include "utils/common/registry.h"
+#include "components/renderercomponent.h"
 
 using std::string;
 using std::vector;
 using WhiteDeer::Utils::StaticNamedPool;
+using WhiteDeer::Engine::MeshRenderer;
 
 namespace WhiteDeer {
 namespace Graphics {
 
 class Mesh : public StaticNamedPool<string, Mesh> {
+  friend class Renderer;
+  friend class MeshRenderer;
   friend class StaticNamedPool<string, Mesh>;
 
  public:
-  void Draw();
-
  protected:
   Mesh(const string& path) { load(path); }
   Mesh(const string& noname, const vector<GLfloat>& points,

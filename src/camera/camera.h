@@ -4,13 +4,19 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
+
+#include "graphics/renderloop/renderloop.h"
 
 namespace WhiteDeer {
 namespace Engine {
 
+using std::vector;
 using WhiteDeer::Utils::Singleton;
 
 class Camera {
+  friend class WhiteDeer::Graphics::RenderLoop;
+
  public:
   glm::vec3 GetZDirection();
   glm::vec3 GetYDirection();
@@ -43,16 +49,18 @@ class CameraManager : public Singleton<CameraManager> {
 
   template <typename... Args>
   Camera* CreateCamera(Args... args) {
-    auto camera = new Camera(args...);
-    if (!m_defaultCamera) {
-      m_defaultCamera = camera;
-    }
-    return camera;
+    m_cameras.push_back(new Camera(args...));
+    return m_cameras.back();
   }
-  Camera* GetDefaultCamera() { return m_defaultCamera; }
+
+  vector<Camera*> GetCameras() { return m_cameras; }
+
+  Camera* GetDefaultCamera() {
+    return m_cameras.size() > 0 ? m_cameras[0] : nullptr;
+  }
 
  protected:
-  Camera* m_defaultCamera = nullptr;
+  vector<Camera*> m_cameras;
 };
 
 }  // namespace Engine

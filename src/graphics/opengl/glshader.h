@@ -1,12 +1,11 @@
 #pragma once
+#define NOMINMAX 1
 #include <GL/gl3w.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <map>
 #include <memory>
-#include <rttr/registration>
-#include <rttr/registration_friend>
 #include <set>
 #include <string>
 #include <vector>
@@ -45,9 +44,6 @@ class Shader : public StaticNamedPool<string, Shader> {
   string m_name;
   GLuint m_handle;
   //   set<shared_ptr<Program>> m_programs;
-
-  RTTR_ENABLE()
-  RTTR_REGISTRATION_FRIEND
 };
 
 class Program {
@@ -111,9 +107,6 @@ class Program {
   set<shared_ptr<Shader>> m_shaders;
 
   static set<shared_ptr<Program>> s_programs;
-
-  RTTR_ENABLE()
-  RTTR_REGISTRATION_FRIEND
 };
 
 }  // namespace Graphics

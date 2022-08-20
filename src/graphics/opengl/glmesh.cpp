@@ -209,25 +209,5 @@ void Mesh::setVertexAttrib() {
   }
 }
 
-// todo: move to render pipeline
-void Mesh::Draw() {
-  if (m_useebo) {
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    setVertexAttrib();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawElements(GL_TRIANGLES, m_vertexcount, GL_UNSIGNED_INT, 0);
-  } else {
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    setVertexAttrib();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawArrays(GL_TRIANGLES, 0, m_vertexcount);
-  }
-  for (int i = 0; i < m_attribs.size(); i++) {
-    glDisableVertexAttribArray(i);
-  }
-}
-
 }  // namespace Graphics
-
 }  // namespace WhiteDeer

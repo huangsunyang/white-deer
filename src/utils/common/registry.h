@@ -4,11 +4,13 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <string>
 
 using std::map;
 using std::set;
 using std::shared_ptr;
 using std::vector;
+using std::string;
 
 namespace WhiteDeer {
 namespace Utils {
@@ -29,6 +31,7 @@ class Registry {
 // use K to index shared_ptr<V>
 template <typename K, typename V>
 class StaticNamedPool {
+ public:
   using PTR = shared_ptr<V>;
   using CONTAINER = map<K, PTR>;
 
@@ -37,12 +40,8 @@ class StaticNamedPool {
 
   template <typename... Args>
   static PTR GetOrLoad(const K& name, Args... args) {
-    static int s_nameindex = 0;
-    string newname = name;
-    if (name.empty()) {
-      newname = "_anonymous" + std::to_string(s_nameindex++);
-    }
-
+    // string newname = name;
+    string newname = name.empty() ? NewName() : name;
     if (s_entries.find(newname) == s_entries.end()) {
       s_entries[newname] = PTR(new V(newname, args...));
     }
@@ -50,10 +49,26 @@ class StaticNamedPool {
     return s_entries[newname];
   }
 
+  static PTR Set(const K& name, PTR ptr) {
+    // string newname = name;
+    string newname = name.empty() ? NewName() : name;
+    if (s_entries.find(newname) == s_entries.end()) {
+      s_entries[newname] = ptr;
+    }
+    return ptr;
+  }
+
+  static PTR Set(PTR ptr) { return Set("", ptr); }
+
   static void Delete(const K& name) {
     if (s_entries.find(name) != s_entries.end()) {
       s_entries.erase(name);
     }
+  }
+
+  static string NewName() {
+    static int s_nameindex = 0;
+    return "_anonymous" + std::to_string(s_nameindex++);
   }
 
  protected:

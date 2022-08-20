@@ -11,6 +11,7 @@
 #include "editor/gui/editor_gui.h"
 #include "editor/gui/gamewindow.h"
 #include "filesystem/filesystemmanager.h"
+#include "graphics/renderloop/renderloop.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "log/log.h"
@@ -96,9 +97,6 @@ void Application::Start() {
   assert(InitImGui());
 
   InitInput();
-
-  m_framebuffer = FrameBuffer::CreateFrameBuffer(1920, 1080);
-  GameWindow::GetInstance()->AddView(m_framebuffer);
 }
 
 void Application::Terminate() {
@@ -113,28 +111,17 @@ void Application::Terminate() {
 
 void Application::MainLoop() {
   glfwPollEvents();
-
-  // window buffer
-  glfwGetFramebufferSize(m_window, &m_width, &m_height);
-  GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
-  glClearBufferfv(GL_COLOR, 0, whiteColor);
-
   TimeManager::GetInstance()->Tick();
 
-  // todo: use camera and render loop
-  m_framebuffer->Bind();
-  glViewport(0, 0, m_framebuffer->GetWidth(), m_framebuffer->GetHeight());
-  glClearBufferfv(GL_COLOR, 0, whiteColor);
-
-  // depth test
-  glEnable(GL_DEPTH_TEST);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   // todo: render to be tick func
-  Render();
-  m_framebuffer->UnBind();
+  RenderLoop::DoRenderLoop();
 
-  // render editor gui
+  // clear color and render editor gui
+  FrameBuffer::GetInstance()->UnBind();
+//   glfwGetFramebufferSize(m_window, &m_width, &m_height);
+//   glDisable(GL_DEPTH_TEST);
+  GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
+  glClearBufferfv(GL_COLOR, 0, whiteColor);
   EditorGUIManager::GetInstance()->Render();
 
   glfwSwapBuffers(m_window);

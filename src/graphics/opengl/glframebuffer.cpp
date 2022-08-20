@@ -1,71 +1,51 @@
 #include "graphics/opengl/glframebuffer.h"
 
+#include "editor/gui/gamewindow.h"
+#include "graphics/opengl/glrendertexture.h"
 #include "log/log.h"
 
 namespace WhiteDeer {
 namespace Graphics {
 
-shared_ptr<FrameBuffer> FrameBuffer::CreateFrameBuffer(int w, int h) {
-  shared_ptr<FrameBuffer> ret(new FrameBuffer(w, h));
+using Editor::GameWindow;
 
-  return ret;
-}
-
-FrameBuffer::FrameBuffer(int w, int h) {
-  m_width = w;
-  m_height = h;
-
+FrameBuffer::FrameBuffer() {
   // create frame buffer
   glGenFramebuffers(1, &m_fbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    LOGE << "create framebuffer failed";
-  }
 
-  // create texture
-  glGenTextures(1, &m_texture);
-  glBindTexture(GL_TEXTURE_2D, m_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
-               NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         m_texture, 0);
-
-  // create depth buffer
-  glGenTextures(1, &m_depth);
-  glBindTexture(GL_TEXTURE_2D, m_depth);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0, GL_DEPTH_STENCIL,
-               GL_UNSIGNED_INT_24_8, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-                         GL_TEXTURE_2D, m_depth, 0);
+  // create default texture
+  m_defaultcolor = RenderTexture::Create(1920, 1080, RT_COLOR);
+  m_defaultdepth = RenderTexture::Create(1920, 1080, RT_DEPTH);
 }
 
 FrameBuffer::~FrameBuffer() {
+  // delete frame buffer
   glDeleteFramebuffers(1, &m_fbo);
-  glDeleteRenderbuffers(1, &m_rbo);
 }
 
-void FrameBuffer::Resize(int w, int h) {
-  m_width = w;
-  m_height = h;
-
-  // change texture size
-  glBindTexture(GL_TEXTURE_2D, m_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
-               NULL);
-
-  // change depth texture
-  glBindTexture(GL_TEXTURE_2D, m_depth);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0, GL_DEPTH_STENCIL,
-               GL_UNSIGNED_INT_24_8, NULL);
+void FrameBuffer::Bind() const {
+  // bind default texture
+  // resize to window size
+  auto width = GameWindow::GetInstance()->GetWidth();
+  auto height = GameWindow::GetInstance()->GetHeight();
+  m_defaultcolor->Resize((int)width, (int)height);
+  m_defaultdepth->Resize((int)width, (int)height);
+  Bind(*m_defaultcolor, *m_defaultdepth);
 }
 
-void FrameBuffer::Bind() const {glBindFramebuffer(GL_FRAMEBUFFER, m_fbo); }
+void FrameBuffer::Bind(const RenderTexture& color,
+                       const RenderTexture& depth) const {
+  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         color.GetHandle(), 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                         GL_TEXTURE_2D, depth.GetHandle(), 0);
+}
 
-void FrameBuffer::UnBind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+void FrameBuffer::UnBind() const {
+  // unbind frame buffer
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 }  // namespace Graphics
 }  // namespace WhiteDeer

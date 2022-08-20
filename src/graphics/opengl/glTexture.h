@@ -25,6 +25,8 @@ class Texture : public StaticNamedPool<string, Texture> {
     glBindTexture(GL_TEXTURE_2D, m_handle);
   }
   GLuint GetHandle() const { return m_handle; }
+  int GetWidth() const { return m_width; }
+  int GetHeight() const { return m_height; }
 
  protected:
   Texture() {}

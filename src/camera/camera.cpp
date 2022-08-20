@@ -45,8 +45,6 @@ void Camera::Rotate(float x, float y) {
     auto newdir = rotationMat * glm::vec4(m_dir, 1.0);
     m_dir = glm::normalize(glm::vec3(newdir.x, newdir.y, newdir.z));
   }
-
-  LOGE << m_dir.x << ' ' << m_dir.y << ' ' << m_dir.z;
 }
 
 }  // namespace Engine
