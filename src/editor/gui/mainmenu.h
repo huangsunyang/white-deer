@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui.h>
 
-#include "editor/gui/editor_gui.h"
+#include "editor/gui/editorgui.h"
 #include "editor/gui/luawindow.h"
 
 namespace WhiteDeer {

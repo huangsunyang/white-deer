@@ -8,7 +8,7 @@
 #include "graphics/opengl/gltexture.h"
 #include "graphics/opengl/glvertexattrib.h"
 #include "utils/common/registry.h"
-#include "components/renderercomponent.h"
+#include "components/renderer.h"
 
 using std::string;
 using std::vector;

@@ -1,4 +1,4 @@
-#include "components/renderercomponent.h"
+#include "components/renderer.h"
 
 #include "graphics/opengl/glmesh.h"
 

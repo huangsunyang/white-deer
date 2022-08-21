@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "camera/camera.h"
-#include "editor/gui/editor_gui.h"
+#include "editor/gui/editorgui.h"
 #include "graphics/opengl/glshader.h"
 
 using namespace WhiteDeer::Graphics;

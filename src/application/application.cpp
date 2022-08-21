@@ -8,7 +8,7 @@
 #include <cstdio>
 
 #include "camera/camera.h"
-#include "editor/gui/editor_gui.h"
+#include "editor/gui/editorgui.h"
 #include "editor/gui/gamewindow.h"
 #include "filesystem/filesystemmanager.h"
 #include "graphics/renderloop/renderloop.h"

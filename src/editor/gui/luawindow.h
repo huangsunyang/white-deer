@@ -1,6 +1,6 @@
 #pragma once
 
-#include "editor/gui/editor_gui.h"
+#include "editor/gui/editorgui.h"
 #include "editor/gui/textscroll.h"
 #include "scriptsystem/lua/luamanager.h"
 #include "ticktime/timemanager.h"

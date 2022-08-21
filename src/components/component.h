@@ -3,7 +3,11 @@
 namespace WhiteDeer {
 namespace Engine {
 
+class GameObject;
+
 class Component {
+  friend class GameObject;
+
  public:
   virtual ~Component() {}
 
@@ -11,6 +15,11 @@ class Component {
   bool IsInstanceOf() {
     return dynamic_cast<const T*>(this) != nullptr;
   }
+
+  GameObject* GetGameObject() { return m_gameobject; }
+
+ protected:
+  GameObject* m_gameobject;
 };
 
 }  // namespace Engine

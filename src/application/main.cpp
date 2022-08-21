@@ -7,7 +7,7 @@
 #include "Tracy.hpp"
 #include "application/application.h"
 #include "camera/camera.h"
-#include "components/renderercomponent.h"
+#include "components/renderer.h"
 #include "editor/gui/testwindow.h"
 #include "filesystem/filesystemmanager.h"
 #include "graphics/opengl/glTexture.h"
@@ -34,7 +34,7 @@ class MainApplication : public Application {
 
     auto scene = SceneManager::GetOrLoad("default");
     {
-      auto obj = scene->NewChild();
+      auto obj = scene->AddChild();
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/bun_zipper.ply");
       meshrenderer->SetShader("package/shaders/test.vs",
@@ -42,7 +42,7 @@ class MainApplication : public Application {
     }
 
     {
-      auto obj = scene->NewChild();
+      auto obj = scene->AddChild();
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/f16/f16.obj");
       meshrenderer->SetTexture("package/models/f16/f16s.bmp");

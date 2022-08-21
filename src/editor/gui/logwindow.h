@@ -8,7 +8,7 @@
 #include <mutex>
 #include <string>
 
-#include "editor/gui/editor_gui.h"
+#include "editor/gui/editorgui.h"
 #include "editor/gui/textscroll.h"
 #include "log/log.h"
 

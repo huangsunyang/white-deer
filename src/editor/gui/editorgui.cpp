@@ -1,4 +1,4 @@
-#include "editor/gui/editor_gui.h"
+#include "editor/gui/editorgui.h"
 
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
@@ -15,6 +15,8 @@
 #include "editor/gui/mainmenu.h"
 #include "editor/gui/shaderwindow.h"
 #include "editor/gui/testwindow.h"
+#include "editor/gui/scenewindow.h"
+#include "editor/gui/objectwindow.h"
 #include "filesystem/localfilesystem.h"
 
 namespace WhiteDeer {
@@ -41,6 +43,8 @@ void EditorGUIManager::InitEditors() {
   LogWindow::Register();
   LuaWindow::Register();
   GameWindow::Register();
+  SceneWindow::Register();
+  ObjectWindow::Register();
 }
 
 void EditorGUIManager::Render() {

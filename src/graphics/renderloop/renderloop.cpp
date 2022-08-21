@@ -1,7 +1,8 @@
 #include "graphics/renderloop/renderloop.h"
 
 #include "camera/camera.h"
-#include "components/renderercomponent.h"
+#include "components/renderer.h"
+#include "components/transform.h"
 #include "editor/gui/gamewindow.h"
 #include "graphics/opengl/glframebuffer.h"
 #include "scene/scene.h"
@@ -42,10 +43,11 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
   for (auto renderer : renderers) {
     // set uniform variables
     auto program = renderer->GetShader();
+    auto transform = renderer->GetGameObject()->GetComponent<Transform>();
     program->Use();
     program->SetUniformMatrix4fv("projection", camera->GetProjectionMatrix());
     program->SetUniformMatrix4fv("view", camera->GetViewMatrix());
-    program->SetUniformMatrix4fv("model", glm::mat4(1.0f));
+    program->SetUniformMatrix4fv("model", transform->GetModelMatrix());
     if (renderer->m_texture) {
       program->SetUniformTexture("u_texture", *renderer->m_texture);
     }
