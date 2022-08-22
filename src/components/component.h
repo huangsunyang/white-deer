@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+using std::string;
 
 namespace WhiteDeer {
 namespace Engine {
@@ -17,6 +20,9 @@ class Component {
   }
 
   GameObject* GetGameObject() { return m_gameobject; }
+
+  template <typename T>
+  void Transfer(const T* transfer, const string& s) const {}
 
  protected:
   GameObject* m_gameobject;

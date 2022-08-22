@@ -2,6 +2,7 @@
 
 #include "editor/gui/editorgui.h"
 #include "scene/gameobject.h"
+#include "serialization/editortransfer.h"
 
 using namespace WhiteDeer::Engine;
 
@@ -18,9 +19,8 @@ class ObjectWindow : public EditorWindow<ObjectWindow> {
     if (m_gameobject != nullptr) {
       auto components = m_gameobject->GetAllComponents();
       for (auto comp : components) {
-        if (ImGui::TreeNode(comp->GetGameObject()->GetName().c_str())) {
-            ImGui::TreePop();
-        }
+        EditorTransfer transfer;
+        transfer.Transfer("", comp);
       }
     }
     ImGui::End();

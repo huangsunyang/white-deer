@@ -21,6 +21,12 @@ class Renderer : public Component {
  public:
   virtual shared_ptr<Program> GetShader() { return m_shader; }
 
+  template <typename T>
+  void Transfer(const T* transfer, const string& name) const {
+    transfer->Transfer("position", m_position);
+    transfer->Transfer("rotataion", m_rotataion);
+  }
+
  protected:
   virtual void Render() {}
 
