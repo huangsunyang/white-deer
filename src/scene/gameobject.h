@@ -36,9 +36,10 @@ class GameObject {
   vector<T *> GetComponentsInChildren();
 
   inline auto GetName() { return m_name; }
+  inline void SetName(const string &s) { m_name = s; }
   inline auto GetChildren() { return m_children; }
   inline auto GetAllComponents() { return m_components; }
-  inline GameObject *AddChild();
+  inline GameObject *AddChild(const string &name = "");
   inline GameObject *AddChild(GameObject *o);
   inline void RemoveChild(GameObject *o);
   inline void SetParent(GameObject *o);
@@ -114,7 +115,9 @@ vector<T *> GameObject::GetComponentsInChildren() {
   return comps;
 }
 
-GameObject *GameObject::AddChild() { return AddChild(new GameObject("empty")); }
+GameObject *GameObject::AddChild(const string &name) {
+  return AddChild(new GameObject(name));
+}
 
 GameObject *GameObject::AddChild(GameObject *o) {
   if (o->m_parent != nullptr) {

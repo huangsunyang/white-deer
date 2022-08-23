@@ -7,6 +7,7 @@ namespace WhiteDeer {
 namespace Engine {
 
 class GameObject;
+class TransferBase;
 
 class Component {
   friend class GameObject;
@@ -16,13 +17,15 @@ class Component {
 
   template <typename T>
   bool IsInstanceOf() {
-    return dynamic_cast<const T*>(this) != nullptr;
+    return Cast<T>() != nullptr;
+  }
+
+  template <typename T>
+  T * Cast() {
+    return dynamic_cast<T*>(this);
   }
 
   GameObject* GetGameObject() { return m_gameobject; }
-
-  template <typename T>
-  void Transfer(const T* transfer, const string& s) const {}
 
  protected:
   GameObject* m_gameobject;

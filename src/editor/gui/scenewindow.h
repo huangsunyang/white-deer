@@ -29,12 +29,12 @@ class SceneWindow : public EditorWindow<SceneWindow> {
     auto flags = is_root ? root_flags : (children.empty() ? leaf_flags : 0);
 
     if (ImGui::TreeNodeEx(root->GetName().c_str(), flags)) {
-      for (auto& child : children) {
-        RecursiveTreeNode(child);
-      }
-
       if (ImGui::IsItemClicked()) {
         ObjectWindow::GetInstance()->SetGameObject(root);
+      }
+
+      for (auto& child : children) {
+        RecursiveTreeNode(child);
       }
 
       ImGui::TreePop();

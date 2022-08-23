@@ -19,9 +19,9 @@ class Transform : public Component {
   glm::mat4 GetModelMatrix();
 
   template <typename T>
-  void Transfer(const T* transfer, const string& name) const {
-    transfer->Transfer("position", m_position);
-    transfer->Transfer("rotataion", m_rotataion);
+  void Transfer(T* transfer, const char* name) {
+    transfer->Transfer("position", &m_position);
+    transfer->Transfer("rotataion", &m_rotation);
   }
 
  protected:

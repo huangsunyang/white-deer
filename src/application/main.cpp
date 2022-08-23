@@ -34,7 +34,7 @@ class MainApplication : public Application {
 
     auto scene = SceneManager::GetOrLoad("default");
     {
-      auto obj = scene->AddChild();
+      auto obj = scene->AddChild("bunny");
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/bun_zipper.ply");
       meshrenderer->SetShader("package/shaders/test.vs",
@@ -42,7 +42,7 @@ class MainApplication : public Application {
     }
 
     {
-      auto obj = scene->AddChild();
+      auto obj = scene->AddChild("f16");
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/f16/f16.obj");
       meshrenderer->SetTexture("package/models/f16/f16s.bmp");
