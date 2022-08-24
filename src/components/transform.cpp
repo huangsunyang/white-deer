@@ -5,11 +5,15 @@ namespace WhiteDeer {
 namespace Engine {
 
 glm::mat4 Transform::GetModelMatrix() {
-  return GetTranslationMatrix() * GetRotationMatrix();
+  return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }
 
 glm::mat4 Transform::GetTranslationMatrix() {
   return glm::translate(glm::mat4(1.0f), m_position);
+}
+
+glm::mat4 Transform::GetScaleMatrix() {
+  return glm::scale(glm::mat4(1.0f), m_scale);
 }
 
 glm::mat4 Transform::GetRotationMatrix() {

@@ -1,6 +1,7 @@
 #include "graphics/renderloop/renderloop.h"
 
 #include "camera/camera.h"
+#include "components/light.h"
 #include "components/renderer.h"
 #include "components/transform.h"
 #include "editor/gui/gamewindow.h"
@@ -40,6 +41,8 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
 
   auto p_scene = SceneManager::GetCurrentScene();
   auto renderers = p_scene->GetComponentsInChildren<Renderer>();
+  auto lights = p_scene->GetComponentsInChildren<Light>();
+
   for (auto renderer : renderers) {
     // set uniform variables
     auto program = renderer->GetShader();
@@ -50,6 +53,15 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
     program->SetUniformMatrix4fv("model", transform->GetModelMatrix());
     if (renderer->m_texture) {
       program->SetUniformTexture("u_texture", *renderer->m_texture);
+    }
+
+    bool has_light = lights.size() > 0;
+    if (program->HasUniform("u_lightDir")) {
+      program->SetUniform3f("u_lightDir", {1, 1, 1});
+    }
+
+    if (program->HasUniform("u_lightColor")) {
+      program->SetUniform3f("u_lightColor", lights[0]->GetColor());
     }
 
     renderer->Render();

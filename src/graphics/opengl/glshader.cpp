@@ -20,7 +20,7 @@ namespace Graphics {
 using namespace WhiteDeer::Utils;
 using namespace WhiteDeer::Engine;
 
-void Shader::load(const string& path) {
+void Shader::load(const string &path) {
   m_name = path;
   auto localfs = GetLocalFileSystem();
   auto abspath = localfs->ToAbsolute(path);
@@ -76,12 +76,12 @@ void Program::load(std::initializer_list<string> paths) {
   load(temp);
 }
 
-void Program::load(const vector<string>& paths) {
-  for (auto& path : paths) {
+void Program::load(const vector<string> &paths) {
+  for (auto &path : paths) {
     m_shaders.insert(Shader::GetOrLoad(path));
   }
 
-  for (auto& p : m_shaders) {
+  for (auto &p : m_shaders) {
     glAttachShader(m_handle, p->m_handle);
   }
   glLinkProgram(m_handle);
@@ -113,7 +113,7 @@ Program::~Program() { glDeleteProgram(m_handle); }
 
 void Program::Refresh() {
   vector<string> vec;
-  for (auto& p : m_shaders) {
+  for (auto &p : m_shaders) {
     glDetachShader(m_handle, p->m_handle);
     vec.push_back(p->m_name);
   }
@@ -125,9 +125,51 @@ void Program::Refresh() {
 
 void Program::RefreshAll() {
   Shader::ReloadAll();
-  for (auto& p : s_programs) {
+  for (auto &p : s_programs) {
     p->Refresh();
   }
+}
+
+bool Program::HasUniform(const string &name) {
+  return glGetUniformLocation(m_handle, name.c_str()) >= 0;
+}
+
+int Program::GetUniformLocation(const string &name) {
+  auto result = glGetUniformLocation(m_handle, name.c_str());
+  if (result < 0) {
+    LOGW << name << ": " << result;
+  }
+  return result;
+}
+
+void Program::SetUniform3f(const string &name, float x, float y, float z) {
+  glUniform3f(GetUniformLocation(name), x, y, z);
+}
+
+void Program::SetUniform3f(const string &name, glm::vec3 v) {
+  glUniform3f(GetUniformLocation(name), v.x, v.y, v.z);
+}
+
+void Program::SetUniform4f(const string &name, float x, float y, float z,
+                           float w) {
+  glUniform4f(GetUniformLocation(name), x, y, z, w);
+}
+
+void Program::SetUniformTexture(const string &name, const Texture &tex,
+                                int index) {
+  tex.Use(index);
+  glUniform1i(GetUniformLocation(name), index);
+}
+
+void Program::SetUniformTexture(const string &name, GLuint handle, int index) {
+  glActiveTexture(GL_TEXTURE0 + index);
+  glBindTexture(GL_TEXTURE_2D, handle);
+  glUniform1i(GetUniformLocation(name), index);
+}
+
+void Program::SetUniformMatrix4fv(const string &name, const glm::mat4 &matrix) {
+  glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE,
+                     glm::value_ptr(matrix));
 }
 
 }  // namespace Graphics

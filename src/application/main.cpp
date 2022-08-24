@@ -8,6 +8,7 @@
 #include "application/application.h"
 #include "camera/camera.h"
 #include "components/renderer.h"
+#include "components/light.h"
 #include "editor/gui/testwindow.h"
 #include "filesystem/filesystemmanager.h"
 #include "graphics/opengl/glTexture.h"
@@ -49,6 +50,16 @@ class MainApplication : public Application {
       meshrenderer->SetShader("package/shaders/test_vnt.vs",
                               "package/shaders/test_vnt.fs");
     }
+
+  {
+    auto light = scene->AddChild("light");
+    auto meshrenderer = light->AddComponent<MeshRenderer>();
+    meshrenderer->SetMesh("cube");
+    meshrenderer->SetTexture("package/textures/flower-pattern.jpg");
+    meshrenderer->SetShader("package/shaders/test_vt.vs",
+                              "package/shaders/test_vt.fs");
+    auto lightcomp = light->AddComponent<Light>();
+  }
 
     // todo: camera should be in scene
     Camera *camera = CameraManager::GetInstance()->CreateCamera();

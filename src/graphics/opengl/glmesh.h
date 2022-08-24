@@ -33,6 +33,7 @@ class Mesh : public StaticNamedPool<string, Mesh> {
   void load(const string& path);
   void loadPly(const string& path);
   void loadObj(const string& path);
+  void loadCube();
   void prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo,
                    const VertexAttribList& attribs);
   void setVertexAttrib();

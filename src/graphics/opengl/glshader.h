@@ -55,34 +55,14 @@ class Program {
   GLuint GetHandle() { return m_handle; }
   auto &GetAllShaders() { return m_shaders; }
 
-  int GetUniformLocation(const string &name) {
-    auto result = glGetUniformLocation(m_handle, name.c_str());
-    if (result < 0) {
-      LOGE << name << ": " << result;
-    }
-    return result;
-  }
-
-  void SetUniform4f(const string &name, float x, float y, float z, float w) {
-    glUniform4f(GetUniformLocation(name), x, y, z, w);
-  }
-
-  void SetUniformTexture(const string &name, const Texture &tex,
-                         int index = 0) {
-    tex.Use(index);
-    glUniform1i(GetUniformLocation(name), index);
-  }
-
-  void SetUniformTexture(const string &name, GLuint handle, int index = 0) {
-    glActiveTexture(GL_TEXTURE0 + index);
-    glBindTexture(GL_TEXTURE_2D, handle);
-    glUniform1i(GetUniformLocation(name), index);
-  }
-
-  void SetUniformMatrix4fv(const string &name, const glm::mat4 &matrix) {
-    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE,
-                       glm::value_ptr(matrix));
-  }
+  bool HasUniform(const string &name);
+  int GetUniformLocation(const string &name);
+  void SetUniform3f(const string &name, glm::vec3);
+  void SetUniform3f(const string &name, float x, float y, float z);
+  void SetUniform4f(const string &name, float x, float y, float z, float w);
+  void SetUniformTexture(const string &name, const Texture &tex, int index = 0);
+  void SetUniformTexture(const string &name, GLuint handle, int index = 0);
+  void SetUniformMatrix4fv(const string &name, const glm::mat4 &matrix);
 
  public:
   template <typename... Args>
