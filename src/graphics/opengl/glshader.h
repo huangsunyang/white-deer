@@ -57,6 +57,7 @@ class Program {
 
   bool HasUniform(const string &name);
   int GetUniformLocation(const string &name);
+  void SetUniform1f(const string &name, float);
   void SetUniform3f(const string &name, glm::vec3);
   void SetUniform3f(const string &name, float x, float y, float z);
   void SetUniform4f(const string &name, float x, float y, float z, float w);

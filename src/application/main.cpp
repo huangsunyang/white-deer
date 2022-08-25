@@ -38,7 +38,7 @@ class MainApplication : public Application {
       auto obj = scene->AddChild("bunny");
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/bun_zipper.ply");
-      meshrenderer->SetShader("package/shaders/test.vs",
+      meshrenderer->SetMaterial("package/shaders/test.vs",
                               "package/shaders/test.fs");
     }
 
@@ -47,7 +47,7 @@ class MainApplication : public Application {
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/f16/f16.obj");
       meshrenderer->SetTexture("package/models/f16/f16s.bmp");
-      meshrenderer->SetShader("package/shaders/test_vnt.vs",
+      meshrenderer->SetMaterial("package/shaders/test_vnt.vs",
                               "package/shaders/test_vnt.fs");
     }
 
@@ -56,9 +56,13 @@ class MainApplication : public Application {
     auto meshrenderer = light->AddComponent<MeshRenderer>();
     meshrenderer->SetMesh("cube");
     meshrenderer->SetTexture("package/textures/flower-pattern.jpg");
-    meshrenderer->SetShader("package/shaders/test_vt.vs",
+    meshrenderer->SetMaterial("package/shaders/test_vt.vs",
                               "package/shaders/test_vt.fs");
     auto lightcomp = light->AddComponent<Light>();
+    auto transform = light->GetComponent<Transform>();
+    transform->SetPosition(-2.5f, 1.5f, -3.0f);
+    transform->SetRotation(0.5f, 1.2f, 0.0f);
+    transform->SetScale(0.1f, 0.1f, 0.5f);
   }
 
     // todo: camera should be in scene

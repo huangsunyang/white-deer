@@ -2,7 +2,7 @@
 
 #include "components/component.h"
 #include "graphics/opengl/glTexture.h"
-#include "graphics/opengl/glshader.h"
+#include "graphics/opengl/glmaterial.h"
 #include "graphics/renderloop/renderloop.h"
 
 namespace WhiteDeer {
@@ -19,17 +19,19 @@ class Renderer : public Component {
   friend class RenderLoop;
 
  public:
-  virtual shared_ptr<Program> GetShader() { return m_shader; }
+  virtual shared_ptr<Material> GetMaterial() { return m_material; }
 
   template <typename T>
-  void Transfer(T* transfer, const string& name) {}
+  void Transfer(T* transfer, const string& name) {
+    transfer->Transfer("material", m_material.get());
+  }
 
  protected:
   virtual void Render() {}
 
   shared_ptr<Texture> m_texture;
   shared_ptr<Mesh> m_mesh;
-  shared_ptr<Program> m_shader;
+  shared_ptr<Material> m_material;
 };
 
 class MeshRenderer : public Renderer {
@@ -40,8 +42,8 @@ class MeshRenderer : public Renderer {
   }
 
   template <typename... Args>
-  void SetShader(Args... args) {
-    m_shader = Program::Load(args...);
+  void SetMaterial(Args... args) {
+    m_material = shared_ptr<Material>(new Material(args...));
   }
 
   template <typename... Args>

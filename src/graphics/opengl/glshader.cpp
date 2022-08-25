@@ -137,37 +137,48 @@ bool Program::HasUniform(const string &name) {
 int Program::GetUniformLocation(const string &name) {
   auto result = glGetUniformLocation(m_handle, name.c_str());
   if (result < 0) {
-    LOGW << name << ": " << result;
+    // LOGW << name << ": " << result;
   }
   return result;
 }
 
+void Program::SetUniform1f(const string &name, float x) {
+  if (!HasUniform(name)) return;
+  glUniform1f(GetUniformLocation(name), x);
+}
+
 void Program::SetUniform3f(const string &name, float x, float y, float z) {
+  if (!HasUniform(name)) return;
   glUniform3f(GetUniformLocation(name), x, y, z);
 }
 
 void Program::SetUniform3f(const string &name, glm::vec3 v) {
+  if (!HasUniform(name)) return;
   glUniform3f(GetUniformLocation(name), v.x, v.y, v.z);
 }
 
 void Program::SetUniform4f(const string &name, float x, float y, float z,
                            float w) {
+  if (!HasUniform(name)) return;
   glUniform4f(GetUniformLocation(name), x, y, z, w);
 }
 
 void Program::SetUniformTexture(const string &name, const Texture &tex,
                                 int index) {
+  if (!HasUniform(name)) return;
   tex.Use(index);
   glUniform1i(GetUniformLocation(name), index);
 }
 
 void Program::SetUniformTexture(const string &name, GLuint handle, int index) {
+  if (!HasUniform(name)) return;
   glActiveTexture(GL_TEXTURE0 + index);
   glBindTexture(GL_TEXTURE_2D, handle);
   glUniform1i(GetUniformLocation(name), index);
 }
 
 void Program::SetUniformMatrix4fv(const string &name, const glm::mat4 &matrix) {
+  if (!HasUniform(name)) return;
   glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE,
                      glm::value_ptr(matrix));
 }

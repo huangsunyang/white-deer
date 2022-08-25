@@ -12,13 +12,18 @@ namespace Engine {
 
 class Transform : public Component {
  public:
-  void SetPosition(float, float, float);
-  void SetRotation(float, float, float);
-  void SetScale(float, float, float);
+  void SetPosition(float x, float y, float z) { m_position = {x, y, z}; }
+  void SetRotation(float x, float y, float z) { m_rotation = {x, y, z}; }
+  void SetScale(float x, float y, float z) { m_scale = {x, y, z}; }
+
   glm::mat4 GetTranslationMatrix();
   glm::mat4 GetRotationMatrix();
   glm::mat4 GetScaleMatrix();
   glm::mat4 GetModelMatrix();
+
+  glm::vec3 GetXDirection();
+  glm::vec3 GetYDirection();
+  glm::vec3 GetZDirection();
 
   template <typename T>
   void Transfer(T* transfer, const string& name) {

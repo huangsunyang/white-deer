@@ -45,8 +45,12 @@ class EditorTransfer {
 
   template <>
   void Transfer<glm::vec3>(const string& name, glm::vec3* data) {
-    ImGui::DragFloat3(name.c_str(), &data->x, FLOAT_STEP, FLOAT_MIN, FLOAT_MAX,
-                      "%.2f", 1.0f);
+    if (name.find("color") != string::npos) {
+      ImGui::ColorEdit3(name.c_str(), &data->x, ImGuiColorEditFlags_Float);
+    } else {
+      ImGui::DragFloat3(name.c_str(), &data->x, FLOAT_STEP, FLOAT_MIN,
+                        FLOAT_MAX, "%.2f", 1.0f);
+    }
   }
 };
 

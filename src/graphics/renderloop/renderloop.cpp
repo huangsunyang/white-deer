@@ -45,23 +45,21 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
 
   for (auto renderer : renderers) {
     // set uniform variables
-    auto program = renderer->GetShader();
+    auto material = renderer->GetMaterial();
+    auto program = material->GetProgram();
     auto transform = renderer->GetGameObject()->GetComponent<Transform>();
-    program->Use();
+    material->Use();
     program->SetUniformMatrix4fv("projection", camera->GetProjectionMatrix());
     program->SetUniformMatrix4fv("view", camera->GetViewMatrix());
     program->SetUniformMatrix4fv("model", transform->GetModelMatrix());
-    if (renderer->m_texture) {
-      program->SetUniformTexture("u_texture", *renderer->m_texture);
-    }
+    program->SetUniformTexture("u_texture", *renderer->m_texture);
+    program->SetUniform3f("u_viewPos", camera->GetPos());
 
-    bool has_light = lights.size() > 0;
-    if (program->HasUniform("u_lightDir")) {
-      program->SetUniform3f("u_lightDir", {1, 1, 1});
-    }
-
-    if (program->HasUniform("u_lightColor")) {
-      program->SetUniform3f("u_lightColor", lights[0]->GetColor());
+    // light
+    if (lights.size() > 0) {
+      auto transform = lights[0]->GetGameObject()->GetComponent<Transform>();
+      program->SetUniform3f("u_light.dir", -transform->GetZDirection());
+      program->SetUniform3f("u_light.color", lights[0]->GetColor());
     }
 
     renderer->Render();

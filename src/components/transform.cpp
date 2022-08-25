@@ -1,4 +1,5 @@
 #include "components/transform.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace WhiteDeer {
@@ -24,6 +25,21 @@ glm::mat4 Transform::GetRotationMatrix() {
   auto rotate_z =
       glm::rotate(glm::mat4(1.0f), m_rotation.z, glm::vec3(0, 0, 1));
   return rotate_z * rotate_y * rotate_x;
+}
+
+glm::vec3 Transform::GetXDirection() {
+  auto rotation = GetRotationMatrix();
+  return rotation[0];
+}
+
+glm::vec3 Transform::GetYDirection() {
+  auto rotation = GetRotationMatrix();
+  return rotation[1];
+}
+
+glm::vec3 Transform::GetZDirection() {
+  auto rotation = GetRotationMatrix();
+  return rotation[2];
 }
 
 }  // namespace Engine
