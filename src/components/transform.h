@@ -12,6 +12,11 @@ namespace Engine {
 
 class Transform : public Component {
  public:
+  glm::vec3 GetPosition() { return m_position; }
+  glm::vec3 GetRotation() { return m_rotation; }
+  glm::vec3 GetScale() { return m_scale; }
+
+
   void SetPosition(float x, float y, float z) { m_position = {x, y, z}; }
   void SetRotation(float x, float y, float z) { m_rotation = {x, y, z}; }
   void SetScale(float x, float y, float z) { m_scale = {x, y, z}; }

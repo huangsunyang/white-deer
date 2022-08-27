@@ -142,27 +142,6 @@ int Program::GetUniformLocation(const string &name) {
   return result;
 }
 
-void Program::SetUniform1f(const string &name, float x) {
-  if (!HasUniform(name)) return;
-  glUniform1f(GetUniformLocation(name), x);
-}
-
-void Program::SetUniform3f(const string &name, float x, float y, float z) {
-  if (!HasUniform(name)) return;
-  glUniform3f(GetUniformLocation(name), x, y, z);
-}
-
-void Program::SetUniform3f(const string &name, glm::vec3 v) {
-  if (!HasUniform(name)) return;
-  glUniform3f(GetUniformLocation(name), v.x, v.y, v.z);
-}
-
-void Program::SetUniform4f(const string &name, float x, float y, float z,
-                           float w) {
-  if (!HasUniform(name)) return;
-  glUniform4f(GetUniformLocation(name), x, y, z, w);
-}
-
 void Program::SetUniformTexture(const string &name, const Texture &tex,
                                 int index) {
   if (!HasUniform(name)) return;

@@ -57,9 +57,7 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
 
     // light
     if (lights.size() > 0) {
-      auto transform = lights[0]->GetGameObject()->GetComponent<Transform>();
-      program->SetUniform3f("u_light.dir", -transform->GetZDirection());
-      program->SetUniform3f("u_light.color", lights[0]->GetColor());
+      lights[0]->Use(program);
     }
 
     renderer->Render();

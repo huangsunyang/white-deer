@@ -34,7 +34,16 @@ class EditorTransfer {
 
   template <typename T>
   void Transfer(const string& name, T* data) {
-    data->Transfer(this, name);
+    if constexpr(std::is_enum_v<T>) {
+      auto itemstrings = GetEnumItems<T>();
+      vector<const char *> items;
+      for (auto& v : itemstrings) {
+        items.push_back(v.c_str());
+      }
+      ImGui::Combo(name.c_str(), (int*)data, items.data(), (int)items.size());
+    } else {
+      data->Transfer(this, name);
+    }
   }
 
   template <>

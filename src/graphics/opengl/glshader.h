@@ -1,5 +1,4 @@
 #pragma once
-#define NOMINMAX 1
 #include <GL/gl3w.h>
 
 #include <glm/glm.hpp>
@@ -12,12 +11,26 @@
 
 #include "graphics/opengl/glTexture.h"
 #include "graphics/opengl/glerror.h"
+#include "utils/common/macro.h"
 #include "utils/common/registry.h"
 #include "utils/common/singleton.h"
 
 using std::shared_ptr;
 using std::string, std::map, std::set, std::vector;
 using namespace WhiteDeer::Utils;
+
+#define CAT(L, R) L##R
+#define FOREACH(x) CAT(REMOVE_, x)
+
+#define REMOVE_int
+#define REMOVE_uint
+#define REMOVE_float
+
+#define DECLARE_SET_UNIFORM(postfix, ...)                                \
+  void SetUniform##postfix(const string &name, __VA_ARGS__) {            \
+    if (!HasUniform(name)) return;                                       \
+    glUniform##postfix(GetUniformLocation(name), FORMACRO(__VA_ARGS__)); \
+  }
 
 namespace WhiteDeer {
 namespace Graphics {
@@ -43,7 +56,6 @@ class Shader : public StaticNamedPool<string, Shader> {
 
   string m_name;
   GLuint m_handle;
-  //   set<shared_ptr<Program>> m_programs;
 };
 
 class Program {
@@ -57,10 +69,20 @@ class Program {
 
   bool HasUniform(const string &name);
   int GetUniformLocation(const string &name);
-  void SetUniform1f(const string &name, float);
-  void SetUniform3f(const string &name, glm::vec3);
-  void SetUniform3f(const string &name, float x, float y, float z);
-  void SetUniform4f(const string &name, float x, float y, float z, float w);
+
+  DECLARE_SET_UNIFORM(1i, int x)
+  DECLARE_SET_UNIFORM(2i, int x, int y)
+  DECLARE_SET_UNIFORM(3i, int x, int y, int z)
+  DECLARE_SET_UNIFORM(4i, int x, int y, int z, int w)
+
+  DECLARE_SET_UNIFORM(1f, float x)
+  DECLARE_SET_UNIFORM(2f, float x, float y)
+  DECLARE_SET_UNIFORM(3f, float x, float y, float z)
+  DECLARE_SET_UNIFORM(4f, float x, float y, float z, float w)
+
+  void SetUniform3f(const string &name, glm::vec3 v) {
+    SetUniform3f(name, v.x, v.y, v.z);
+  }
   void SetUniformTexture(const string &name, const Texture &tex, int index = 0);
   void SetUniformTexture(const string &name, GLuint handle, int index = 0);
   void SetUniformMatrix4fv(const string &name, const glm::mat4 &matrix);

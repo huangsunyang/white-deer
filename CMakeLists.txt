@@ -7,6 +7,10 @@ project(engine VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+if(MSVC)
+    add_compile_options(/Zc:preprocessor)
+endif()
+
 # include path
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/third-party/chibi-scheme-0.10/include)
