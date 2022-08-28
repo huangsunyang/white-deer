@@ -24,9 +24,20 @@ class ObjectWindow : public EditorWindow<ObjectWindow> {
       ImGui::InputText("name", tempName, 32);
       m_gameobject->SetName(tempName);
 
-      for (auto comp : components) {
+      int sameNameCount = 0;
+      for (int i = 0; i < components.size(); i++) {
         EditorTransfer transfer;
-        transfer.TransferComponent("", comp);
+        auto name = components[i]->GetComponentName();
+
+        // Light, Light1, Ligh2...
+        if (i > 0 && components[i]->GetComponentName() ==
+                         components[i - 1]->GetComponentName()) {
+          sameNameCount += 1;
+          name += std::to_string(sameNameCount);
+        } else {
+          sameNameCount = 0;
+        }
+        transfer.TransferComponent(name, components[i]);
       }
     }
     ImGui::End();

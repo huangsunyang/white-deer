@@ -11,11 +11,12 @@ namespace WhiteDeer {
 namespace Engine {
 
 class Transform : public Component {
+  DECLARE_COMPONENT(Transform)
+
  public:
   glm::vec3 GetPosition() { return m_position; }
   glm::vec3 GetRotation() { return m_rotation; }
   glm::vec3 GetScale() { return m_scale; }
-
 
   void SetPosition(float x, float y, float z) { m_position = {x, y, z}; }
   void SetRotation(float x, float y, float z) { m_rotation = {x, y, z}; }

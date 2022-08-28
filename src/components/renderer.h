@@ -16,6 +16,7 @@ namespace Engine {
 using namespace Graphics;
 
 class Renderer : public Component {
+  DECLARE_COMPONENT(Renderer)
   friend class RenderLoop;
 
  public:
@@ -35,6 +36,8 @@ class Renderer : public Component {
 };
 
 class MeshRenderer : public Renderer {
+  DECLARE_COMPONENT(MeshRenderer)
+
  public:
   template <typename... Args>
   void SetMesh(Args... args) {

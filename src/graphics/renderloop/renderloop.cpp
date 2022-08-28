@@ -56,8 +56,9 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
     program->SetUniform3f("u_viewPos", camera->GetPos());
 
     // light
-    if (lights.size() > 0) {
-      lights[0]->Use(program);
+    program->SetUniform1i("u_lightNum", int(lights.size()));
+    for (int i = 0; i < lights.size(); i++) {
+      lights[i]->Use(program, i);
     }
 
     renderer->Render();

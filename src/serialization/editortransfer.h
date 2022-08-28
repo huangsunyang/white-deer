@@ -12,12 +12,13 @@
 namespace WhiteDeer {
 namespace Engine {
 
-#define TRANSFER_COMPONENT(name, type_)    \
-  if (comp->IsInstanceOf<type_>()) {       \
-    if (ImGui::CollapsingHeader(#type_)) { \
-      Transfer(name, comp->Cast<type_>()); \
-    }                                      \
-    return;                                \
+#define TRANSFER_COMPONENT(name, type_)                               \
+  if (comp->IsInstanceOf<type_>()) {                                  \
+    if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_Framed)) { \
+      Transfer(name, comp->Cast<type_>());                            \
+      ImGui::TreePop();                                               \
+    }                                                                 \
+    return;                                                           \
   }
 
 static const float FLOAT_MIN = -10000.0f;
@@ -34,9 +35,9 @@ class EditorTransfer {
 
   template <typename T>
   void Transfer(const string& name, T* data) {
-    if constexpr(std::is_enum_v<T>) {
+    if constexpr (std::is_enum_v<T>) {
       auto itemstrings = GetEnumItems<T>();
-      vector<const char *> items;
+      vector<const char*> items;
       for (auto& v : itemstrings) {
         items.push_back(v.c_str());
       }

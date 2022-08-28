@@ -16,11 +16,13 @@ namespace WhiteDeer {
 namespace Engine {
 
 class Light : public Component {
+  DECLARE_COMPONENT(Light)
+
  public:
   glm::vec3 GetColor() { return m_color; }
   void SetColor(float r, float g, float b) { m_color = glm::vec3(r, g, b); }
 
-  void Use(shared_ptr<Program>);
+  void Use(shared_ptr<Program>, int);
 
   template <typename T>
   void Transfer(T* transfer, const string& name) {

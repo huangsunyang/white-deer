@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "components/component.h"
 #include "components/transform.h"
@@ -54,6 +55,10 @@ class GameObject {
 
 Component *GameObject::AddComponent(Component *comp) {
   m_components.push_back(comp);
+  std::sort(m_components.begin(), m_components.end(),
+            [](Component *x, Component *y) {
+              return x->GetComponentName() < y->GetComponentName();
+            });
   comp->m_gameobject = this;
   return comp;
 };

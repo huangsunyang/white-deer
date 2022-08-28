@@ -10,9 +10,12 @@ uniform vec3 u_viewPos;
 uniform sampler2D u_texture;
 
 struct Material {
+  // infact, these are about color
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
+
+  // specular
   float shininess;
 };
 
@@ -33,10 +36,12 @@ struct Light {
 };
 
 uniform Material u_material;
-uniform Light u_light;
+uniform Light u_lights[16];
+uniform int u_lightNum;
 
-void main()
-{
+vec3 CalculateLight(int i) {
+  Light u_light = u_lights[i];
+
   // normalize
   vec3 normal = normalize(f_normal);
   vec3 lightDir = normalize(u_light.dir);
@@ -44,14 +49,14 @@ void main()
   float cutoffIntensity = 1.0;
 
   if (u_light.type > 0) {
-    // point light has attenuation
+    // point light and spot light has attenuation
     lightDir = normalize(f_worldPos - u_light.pos);
     float distance = length(f_worldPos - u_light.pos);
     attenuation = u_light.constant + u_light.linear * distance + u_light.quadratic * distance * distance;
     attenuation = 1.0 / attenuation;
 
     if (u_light.type == 2) {
-      // spot light
+      // spot light has a spot range called cutoff
       float theta = dot(lightDir, normalize(u_light.dir));
       float outerCutoff = min(u_light.cutoff - 0.001, u_light.outerCutoff);
       float delta = u_light.cutoff - outerCutoff;
@@ -73,6 +78,14 @@ void main()
   vec3 specular = u_material.specular * spec * u_light.color;
 
   // final color
+  return ambient + (diffuse + specular) * cutoffIntensity * attenuation;
+}
+
+void main() {
+  vec3 lightColor = vec3(0, 0, 0);
+  for (int i = 0; i < u_lightNum; i++) {
+    lightColor += CalculateLight(i);
+  }
   vec4 texColor = texture(u_texture, f_tex);
-  f_color = vec4(ambient + (diffuse + specular) * cutoffIntensity, 1.0) * attenuation * texColor;
+  f_color = vec4(lightColor, 1.0) * texColor;
 }

@@ -59,6 +59,7 @@ class MainApplication : public Application {
     meshrenderer->SetMaterial("package/shaders/test_vt.vs",
                               "package/shaders/test_vt.fs");
     auto lightcomp = light->AddComponent<Light>();
+    auto lightcomp2 = light->AddComponent<Light>();
     auto transform = light->GetComponent<Transform>();
     transform->SetPosition(-2.5f, 1.5f, -3.0f);
     transform->SetRotation(0.5f, 1.2f, 0.0f);
