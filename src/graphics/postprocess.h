@@ -6,7 +6,7 @@
 #include "utils/common/registry.h"
 
 DECALRE_ENUM(PostprocessType, PostprocessType_None, PostprocessType_Inversion,
-             PostprocessType_Blur, PostprocessType_GuassBlur)
+             PostprocessType_GrayScale, PostprocessType_Blur)
 
 namespace WhiteDeer {
 namespace Graphics {
