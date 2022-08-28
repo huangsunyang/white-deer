@@ -15,6 +15,21 @@ map<string, shared_ptr<Mesh>> Mesh::s_entries;
 
 namespace Graphics {
 
+void Mesh::Draw() {
+  glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+  setVertexAttrib();
+  if (m_useebo) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glDrawElements(GL_TRIANGLES, m_vertexcount, GL_UNSIGNED_INT, 0);
+  } else {
+    glDrawArrays(GL_TRIANGLES, 0, m_vertexcount);
+  }
+
+  for (int i = 0; i < m_attribs.size(); i++) {
+    glDisableVertexAttribArray(i);
+  }
+}
+
 void Mesh::load(const string& path) {
   if (Utils::endswith(path, ".ply")) {
     loadPly(path);

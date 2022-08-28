@@ -6,9 +6,6 @@ in vec2 f_tex;
 
 out vec4 f_color;
 
-uniform vec3 u_viewPos;
-uniform sampler2D u_texture;
-
 struct Material {
   // infact, these are about color
   vec3 ambient;
@@ -17,6 +14,9 @@ struct Material {
 
   // specular
   float shininess;
+
+  // Fresnel
+  float fresnel;
 };
 
 struct Light {
@@ -34,6 +34,10 @@ struct Light {
   float cutoff;
   float outerCutoff;
 };
+
+uniform vec3 u_viewPos;
+uniform sampler2D u_texture;
+uniform samplerCube u_skybox;
 
 uniform Material u_material;
 uniform Light u_lights[16];
@@ -86,6 +90,18 @@ void main() {
   for (int i = 0; i < u_lightNum; i++) {
     lightColor += CalculateLight(i);
   }
+
+  // reflect env color
+  vec3 normal = normalize(f_normal);
+  vec3 viewDir = normalize(u_viewPos - f_worldPos);
+  vec3 viewReflect = reflect(-viewDir, normal);
+  vec4 envColor = texture(u_skybox, viewReflect);
+
+  // Fresnel
+  float viewNormalDot = dot(viewDir, normal);
   vec4 texColor = texture(u_texture, f_tex);
-  f_color = vec4(lightColor, 1.0) * texColor;
+  float fresnel = max(u_material.fresnel, 0.0);
+  vec4 finalColor = mix(envColor, texColor, pow(viewNormalDot, fresnel));
+
+  f_color = vec4(lightColor, 1.0) * finalColor;
 }

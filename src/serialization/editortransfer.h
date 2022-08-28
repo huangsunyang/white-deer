@@ -7,6 +7,7 @@
 #include "components/light.h"
 #include "components/renderer.h"
 #include "components/transform.h"
+#include "components/skybox.h"
 #include "serialization/transferbase.h"
 
 namespace WhiteDeer {
@@ -31,6 +32,7 @@ class EditorTransfer {
     TRANSFER_COMPONENT(name, Transform);
     TRANSFER_COMPONENT(name, Renderer);
     TRANSFER_COMPONENT(name, Light);
+    TRANSFER_COMPONENT(name, SkyBox);
   }
 
   template <typename T>

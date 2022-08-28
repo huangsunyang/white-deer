@@ -20,10 +20,7 @@ class Texture : public StaticNamedPool<string, Texture> {
 
  public:
   virtual ~Texture();
-  void Use(int index = 0) const {
-    glActiveTexture(GL_TEXTURE0 + index);
-    glBindTexture(GL_TEXTURE_2D, m_handle);
-  }
+  virtual void Use(int index = 0) const;
   GLuint GetHandle() const { return m_handle; }
   int GetWidth() const { return m_width; }
   int GetHeight() const { return m_height; }

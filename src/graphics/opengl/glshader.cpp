@@ -149,10 +149,10 @@ void Program::SetUniformTexture(const string &name, const Texture &tex,
   glUniform1i(GetUniformLocation(name), index);
 }
 
-void Program::SetUniformTexture(const string &name, GLuint handle, int index) {
+void Program::SetUniformTexture(const string &name, GLuint handle, GLuint type, int index) {
   if (!HasUniform(name)) return;
   glActiveTexture(GL_TEXTURE0 + index);
-  glBindTexture(GL_TEXTURE_2D, handle);
+  glBindTexture(type, handle);
   glUniform1i(GetUniformLocation(name), index);
 }
 

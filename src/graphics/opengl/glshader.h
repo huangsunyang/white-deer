@@ -84,7 +84,7 @@ class Program {
     SetUniform3f(name, v.x, v.y, v.z);
   }
   void SetUniformTexture(const string &name, const Texture &tex, int index = 0);
-  void SetUniformTexture(const string &name, GLuint handle, int index = 0);
+  void SetUniformTexture(const string &name, GLuint handle, GLuint type = GL_TEXTURE_2D ,int index = 0);
   void SetUniformMatrix4fv(const string &name, const glm::mat4 &matrix);
 
  public:

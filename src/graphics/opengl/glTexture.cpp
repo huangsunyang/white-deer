@@ -20,8 +20,11 @@ map<string, shared_ptr<Texture>> Texture::s_entries;
 
 namespace Graphics {
 
-Texture::~Texture() {
-  glDeleteTextures(1, &m_handle);
+Texture::~Texture() { glDeleteTextures(1, &m_handle); }
+
+void Texture::Use(int index) const {
+  glActiveTexture(GL_TEXTURE0 + index);
+  glBindTexture(GL_TEXTURE_2D, m_handle);
 }
 
 void Texture::load(const string& path) {

@@ -3,7 +3,7 @@
 namespace WhiteDeer {
 
 namespace Engine {
-    class Camera;
+class Camera;
 }
 
 namespace Graphics {

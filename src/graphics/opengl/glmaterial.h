@@ -18,6 +18,7 @@ class Material {
     m_program->SetUniform3f("u_material.diffuse", m_diffuse);
     m_program->SetUniform3f("u_material.specular", m_specular);
     m_program->SetUniform1f("u_material.shininess", m_shininess);
+    m_program->SetUniform1f("u_material.fresnel", m_fresnel);
   }
 
   template <typename T>
@@ -26,6 +27,7 @@ class Material {
     transfer->Transfer("diffuse", &m_diffuse);
     transfer->Transfer("specular", &m_specular);
     transfer->Transfer("shininess", &m_shininess);
+    transfer->Transfer("fresnel", &m_fresnel);
   }
 
  protected:
@@ -33,6 +35,7 @@ class Material {
   glm::vec3 m_diffuse{1.0f, 1.0f, 1.0f};
   glm::vec3 m_specular{1.0f, 1.0f, 1.0f};
   float m_shininess{64.0f};
+  float m_fresnel{0.0f};
 
   shared_ptr<Program> m_program;
 };
