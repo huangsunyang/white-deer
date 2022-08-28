@@ -37,6 +37,8 @@ void Mesh::load(const string& path) {
     loadObj(path);
   } else if (path == "cube") {
     loadCube();
+  } else if (path == "quad") {
+    loadQuad();
   }
 }
 
@@ -202,6 +204,25 @@ void Mesh::loadCube() {
       {2, GL_FLOAT},
   };
   prepareData(vbo, {}, attribs);
+}
+
+void Mesh::loadQuad() {
+  // 3        2
+  // +--------+
+  // |        |
+  // |        |
+  // +--------+
+  // 0        1
+  vector<GLfloat> vbo{
+      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+      1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+      1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+  };
+
+  vector<GLuint> ebo{0, 2, 3, 2, 0, 1};
+  VertexAttribList attribs = {{3, GL_FLOAT}, {2, GL_FLOAT}};
+  prepareData(vbo, ebo, attribs);
 }
 
 void Mesh::prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo,

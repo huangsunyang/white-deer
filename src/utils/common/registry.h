@@ -41,7 +41,10 @@ class StaticNamedPool {
   template <typename... Args>
   static PTR GetOrLoad(const K& name, Args... args) {
     // string newname = name;
-    string newname = name.empty() ? NewName() : name;
+    K newname = name;
+    if constexpr(std::is_same_v<string, K>) {
+      newname = name.empty() ? NewName() : name;
+    }
     if (s_entries.find(newname) == s_entries.end()) {
       s_entries[newname] = PTR(new V(newname, args...));
     }

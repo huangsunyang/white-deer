@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "log/log.h"
+
 using std::string;
 using std::stringstream;
 using std::vector;
@@ -10,6 +12,16 @@ using std::vector;
 template <typename T>
 inline vector<string> GetEnumItems() {
   retrun vector<string>();
+}
+
+template <typename T>
+inline string EnumToString(T e) {
+  int index = (int)e;
+  auto items = GetEnumItems<T>();
+  if (index < 0 || index >= items.size()) {
+    LOGE << "enum to string out of index";
+  }
+  return items[index];
 }
 
 #define DECALRE_ENUM(name, ...)                \

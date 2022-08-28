@@ -1,6 +1,6 @@
 #include "graphics/renderloop/renderloop.h"
 
-#include "camera/camera.h"
+#include "components/camera.h"
 #include "components/light.h"
 #include "components/renderer.h"
 #include "components/skybox.h"
@@ -27,7 +27,8 @@ void RenderLoop::DoForwardRenderLoop() {
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  auto cameras = CameraManager::GetInstance()->GetCameras();
+  auto p_scene = SceneManager::GetCurrentScene();
+  auto cameras = p_scene->GetComponentsInChildren<Camera>();
   for (auto camera : cameras) {
     RenderSingleCamera(camera);
   }
@@ -39,6 +40,8 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
   auto colorRT = FrameBuffer::GetInstance()->GetDefaultColorRT();
   camera->SetAspect(colorRT->GetWidth() * 1.0f / colorRT->GetHeight());
   glViewport(0, 0, colorRT->GetWidth(), colorRT->GetHeight());
+
+  glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
   auto p_scene = SceneManager::GetCurrentScene();
@@ -55,7 +58,7 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
     program->SetUniformMatrix4fv("projection", camera->GetProjectionMatrix());
     program->SetUniformMatrix4fv("view", camera->GetViewMatrix());
     program->SetUniformMatrix4fv("model", transform->GetModelMatrix());
-    program->SetUniform3f("u_viewPos", camera->GetPos());
+    program->SetUniform3f("u_viewPos", camera->GetPosition());
     program->SetUniformTexture("u_texture", *renderer->m_texture);
     if (skyboxs.size() > 0) {
       program->SetUniformTexture("u_skybox", *skyboxs[0]->GetCubeMapTexture());
@@ -82,6 +85,10 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
     program->SetUniformTexture("u_skybox", *skybox->GetCubeMapTexture());
     skybox->Render();
   }
+
+  // postprocess
+  glDisable(GL_DEPTH_TEST);
+  camera->DoPostprocess(*colorRT);
 }
 
 }  // namespace Graphics

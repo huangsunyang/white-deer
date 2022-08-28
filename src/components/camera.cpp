@@ -1,9 +1,16 @@
-#include "camera/camera.h"
+#include "components/camera.h"
 
+#include "components/transform.h"
 #include "log/log.h"
+#include "scene/gameobject.h"
 
 namespace WhiteDeer {
 namespace Engine {
+
+glm::vec3 Camera::GetPosition() {
+  return m_gameobject->GetComponent<Transform>()->GetPosition();
+}
+
 glm::vec3 Camera::GetZDirection() { return m_dir; }
 
 glm::vec3 Camera::GetYDirection() {
@@ -15,7 +22,7 @@ glm::vec3 Camera::GetXDirection() {
 }
 
 glm::mat4 Camera::GetViewMatrix() {
-  return glm::lookAtRH(m_pos, GetTargetPos(), glm::vec3(0, 1, 0));
+  return glm::lookAtRH(GetPosition(), GetTargetPos(), glm::vec3(0, 1, 0));
 }
 
 glm::mat4 Camera::GetProjectionMatrix() {
@@ -24,9 +31,11 @@ glm::mat4 Camera::GetProjectionMatrix() {
 
 void Camera::Move(float x, float y, float z) {
   // move toward target
+  auto m_pos = GetPosition();
   m_pos += z * m_speed * m_dir;
   m_pos += y * m_speed * GetYDirection();
   m_pos += x * m_speed * GetXDirection();
+  m_gameobject->GetComponent<Transform>()->SetPosition(m_pos.x, m_pos.y, m_pos.z);
 }
 
 void Camera::Rotate(float x, float y) {
@@ -45,6 +54,14 @@ void Camera::Rotate(float x, float y) {
     auto newdir = rotationMat * glm::vec4(m_dir, 1.0);
     m_dir = glm::normalize(glm::vec3(newdir.x, newdir.y, newdir.z));
   }
+}
+
+void Camera::DoPostprocess(const Texture& texture) {
+  if (m_postprocessType == PostprocessType_None) {
+    return;
+  }
+  auto postProcess = Postprocess::GetOrLoad(m_postprocessType);
+  postProcess->Render(texture);
 }
 
 }  // namespace Engine

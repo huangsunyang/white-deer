@@ -4,36 +4,20 @@
 
 #include <glm/glm.hpp>
 
-#include "components/light.h"
-#include "components/renderer.h"
-#include "components/transform.h"
-#include "components/skybox.h"
 #include "serialization/transferbase.h"
 
 namespace WhiteDeer {
 namespace Engine {
 
-#define TRANSFER_COMPONENT(name, type_)                               \
-  if (comp->IsInstanceOf<type_>()) {                                  \
-    if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_Framed)) { \
-      Transfer(name, comp->Cast<type_>());                            \
-      ImGui::TreePop();                                               \
-    }                                                                 \
-    return;                                                           \
-  }
-
 static const float FLOAT_MIN = -10000.0f;
 static const float FLOAT_MAX = 10000.0f;
 static const float FLOAT_STEP = 0.05f;
 
+class Component;
+
 class EditorTransfer {
  public:
-  void TransferComponent(const string& name, Component* comp) {
-    TRANSFER_COMPONENT(name, Transform);
-    TRANSFER_COMPONENT(name, Renderer);
-    TRANSFER_COMPONENT(name, Light);
-    TRANSFER_COMPONENT(name, SkyBox);
-  }
+  void TransferComponent(const string& name, Component* comp);
 
   template <typename T>
   void Transfer(const string& name, T* data) {

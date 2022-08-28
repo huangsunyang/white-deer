@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-#include "camera/camera.h"
+#include "components/camera.h"
 #include "editor/gui/editorgui.h"
 #include "graphics/opengl/glshader.h"
 
@@ -44,12 +44,6 @@ class TestWindow : public EditorWindow<TestWindow> {
       ImGui::Text("counter = %d", counter);
       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                   1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-      Camera *camera = CameraManager::GetInstance()->GetDefaultCamera();
-      if (camera) {
-        // ImGui::SliderFloat3("target pos", &camera->GetTargetPos()[0], -1.0f, 1.0f);
-        ImGui::SliderFloat3("camera pos", &camera->GetPos()[0], -1.0f, 1.0f);
-      }
       ImGui::End();
     }
 

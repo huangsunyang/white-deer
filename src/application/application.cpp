@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cstdio>
 
-#include "camera/camera.h"
+#include "components/camera.h"
 #include "editor/gui/editorgui.h"
 #include "editor/gui/gamewindow.h"
 #include "filesystem/filesystemmanager.h"
@@ -118,8 +118,8 @@ void Application::MainLoop() {
 
   // clear color and render editor gui
   FrameBuffer::GetInstance()->UnBind();
-//   glfwGetFramebufferSize(m_window, &m_width, &m_height);
-//   glDisable(GL_DEPTH_TEST);
+  //   glfwGetFramebufferSize(m_window, &m_width, &m_height);
+  //   glDisable(GL_DEPTH_TEST);
   GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
   glClearBufferfv(GL_COLOR, 0, whiteColor);
   EditorGUIManager::GetInstance()->Render();

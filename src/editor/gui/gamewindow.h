@@ -3,7 +3,8 @@
 
 #include <glm/glm.hpp>
 
-#include "camera/camera.h"
+#include "scene/scene.h"
+#include "components/camera.h"
 #include "editor/gui/editorgui.h"
 #include "graphics/opengl/glrendertexture.h"
 #include "graphics/opengl/glshader.h"
@@ -37,8 +38,11 @@ class GameWindow : public EditorWindow<GameWindow> {
     m_height = wsize.y;
 
     // todo: move to render loop
-    Camera* camera = CameraManager::GetInstance()->GetDefaultCamera();
-    ProcessInput(camera);
+    auto p_scene = SceneManager::GetCurrentScene();
+    auto cameras = p_scene->GetComponentsInChildren<Camera>();
+    if (cameras.size() > 0) {
+      ProcessInput(cameras[0]);
+    }
     ImGui::Image((ImTextureID)(size_t)FrameBuffer::GetInstance()
                      ->GetDefaultColorRT()
                      ->GetHandle(),

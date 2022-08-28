@@ -6,7 +6,7 @@
 
 #include "Tracy.hpp"
 #include "application/application.h"
-#include "camera/camera.h"
+#include "components/camera.h"
 #include "components/light.h"
 #include "components/renderer.h"
 #include "components/skybox.h"
@@ -60,7 +60,7 @@ class MainApplication : public Application {
       meshrenderer->SetMaterial("package/shaders/test_vt.vs",
                                 "package/shaders/test_vt.fs");
       auto lightcomp = light->AddComponent<Light>();
-    //   auto lightcomp2 = light->AddComponent<Light>();
+      //   auto lightcomp2 = light->AddComponent<Light>();
       auto transform = light->GetComponent<Transform>();
       transform->SetPosition(-2.5f, 1.5f, -3.0f);
       transform->SetRotation(0.5f, 1.2f, 0.0f);
@@ -82,10 +82,15 @@ class MainApplication : public Application {
                              "package/shaders/skybox.fs");
     }
 
-    // todo: camera should be in scene
-    Camera *camera = CameraManager::GetInstance()->CreateCamera();
-    camera->SetPos({0, 0, 5.0f});
-    camera->SetTargetPos({0, 0.1f, 0});
+    {
+      auto object = scene->AddChild("camera");
+      auto transform = object->GetComponent<Transform>();
+      // currently camera only use transforms position
+      // but use camera's own direction
+      auto camera = object->AddComponent<Camera>();
+      transform->SetPosition(0, 0, 5.0f);
+      camera->SetTargetPos({0, 0.1f, 0});
+    }
   }
 };
 

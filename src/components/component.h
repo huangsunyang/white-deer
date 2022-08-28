@@ -1,17 +1,21 @@
 #pragma once
 #include <string>
+#include "serialization/editortransfer.h"
 
 using std::string;
-
-#define DECLARE_COMPONENT(name) \
- public:                        \
-  virtual string GetComponentName() { return #name; }
 
 namespace WhiteDeer {
 namespace Engine {
 
 class GameObject;
 class TransferBase;
+
+#define DECLARE_COMPONENT(name)                                         \
+ public:                                                                \
+  virtual string GetComponentName() { return #name; }                   \
+  virtual void VirtualTransfer(EditorTransfer* t, const string& name) { \
+    Transfer(t, name);                                                  \
+  }
 
 class Component {
   DECLARE_COMPONENT(Component)
@@ -29,6 +33,9 @@ class Component {
   T* Cast() {
     return dynamic_cast<T*>(this);
   }
+
+  template <typename T>
+  void Transfer(T* transfer, const string& name) {}
 
   GameObject* GetGameObject() { return m_gameobject; }
 
