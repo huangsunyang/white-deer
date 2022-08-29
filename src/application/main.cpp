@@ -53,6 +53,17 @@ class MainApplication : public Application {
     }
 
     {
+      auto obj = scene->AddChild("f161");
+      auto meshrenderer = obj->AddComponent<MeshRenderer>();
+      meshrenderer->SetMesh("package/models/f16/f16.obj");
+      meshrenderer->SetTexture("package/models/f16/f16s.bmp");
+      meshrenderer->SetMaterial("package/shaders/test_vnt.vs",
+                                "package/shaders/test_vnt.fs");
+      auto transform = obj->GetComponent<Transform>();
+      transform->SetPosition(-1, 1, -1);
+    }
+
+    {
       auto light = scene->AddChild("light");
       auto meshrenderer = light->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("cube");

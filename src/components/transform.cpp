@@ -9,6 +9,10 @@ glm::mat4 Transform::GetModelMatrix() {
   return GetTranslationMatrix() * GetRotationMatrix() * GetScaleMatrix();
 }
 
+glm::mat4 Transform::GetViewMatrix() {
+  return glm::lookAtRH(GetPosition(), GetPosition() + GetZDirection(), glm::vec3(0, 1, 0));
+}
+
 glm::mat4 Transform::GetTranslationMatrix() {
   return glm::translate(glm::mat4(1.0f), m_position);
 }

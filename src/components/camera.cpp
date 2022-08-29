@@ -56,6 +56,16 @@ void Camera::Rotate(float x, float y) {
   }
 }
 
+shared_ptr<RenderTexture> Camera::GetShadowMap() {
+  if (!HasShadowMap()) {
+    return nullptr;
+  }
+  if (m_shadowMap == nullptr) {
+    m_shadowMap = RenderTexture::Create(m_shadowMapWidth, m_shadowMapHeight, RT_DEPTH);
+  }
+  return m_shadowMap;
+}
+
 void Camera::DoPostprocess(const Texture& texture) {
   if (m_postprocessType == PostprocessType_None) {
     return;

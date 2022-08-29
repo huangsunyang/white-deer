@@ -17,7 +17,7 @@ using namespace WhiteDeer::Editor;
 
 void RenderLoop::DoForwardRenderLoop() {
   // clear default framebuffer
-  FrameBuffer::GetInstance()->Bind();
+  FrameBuffer::GetDefault()->Bind();
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
@@ -35,19 +35,53 @@ void RenderLoop::DoForwardRenderLoop() {
 }
 
 void RenderLoop::RenderSingleCamera(Camera* camera) {
+  auto p_scene = SceneManager::GetCurrentScene();
+  auto renderers = p_scene->GetComponentsInChildren<Renderer>();
+  auto lights = p_scene->GetComponentsInChildren<Light>();
+  auto skyboxs = p_scene->GetComponentsInChildren<SkyBox>();
+
+  // find a directional light
+  Light* light = nullptr;
+  for (auto& _light : lights) {
+    if (_light->GetType() == LightType_Direction) {
+      light = _light;
+    }
+  }
+
+  glm::mat4 lightMatrix(1.0f);
+  bool hasShadowMap = light != nullptr && camera->HasShadowMap();
+  // shadow map
+  if (hasShadowMap) {
+    auto shadowMap = camera->GetShadowMap();
+    auto lightTransform = light->GetGameObject()->GetComponent<Transform>();
+    auto lightProjection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 1.0f, 7.0f);
+    lightMatrix = lightProjection * lightTransform->GetViewMatrix();
+    FrameBuffer::GetOrLoad("shadowmap")->BindDepth(*shadowMap);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, shadowMap->GetWidth(), shadowMap->GetHeight());
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    for (auto renderer : renderers) {
+      auto transform = renderer->GetGameObject()->GetComponent<Transform>();
+      // todo: constant shadow map texture
+      static shared_ptr<Program> program = Program::Load("package/shaders/shadowmap.vs", "package/shaders/shadowmap.fs");
+      program->Use();
+      program->SetUniformMatrix4fv("lightMatrix", lightMatrix);
+      program->SetUniformMatrix4fv("model", transform->GetModelMatrix());
+      renderer->Render();
+    }
+  }
+
   // todo: bind custom render texture
-  FrameBuffer::GetInstance()->Bind();
-  auto colorRT = FrameBuffer::GetInstance()->GetDefaultColorRT();
+  FrameBuffer::GetDefault()->UnBind();
+  FrameBuffer::GetDefault()->Bind();
+  auto colorRT = FrameBuffer::GetDefault()->GetDefaultColorRT();
   camera->SetAspect(colorRT->GetWidth() * 1.0f / colorRT->GetHeight());
   glViewport(0, 0, colorRT->GetWidth(), colorRT->GetHeight());
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-
-  auto p_scene = SceneManager::GetCurrentScene();
-  auto renderers = p_scene->GetComponentsInChildren<Renderer>();
-  auto lights = p_scene->GetComponentsInChildren<Light>();
-  auto skyboxs = p_scene->GetComponentsInChildren<SkyBox>();
 
   for (auto renderer : renderers) {
     // set uniform variables
@@ -60,6 +94,11 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
     program->SetUniformMatrix4fv("model", transform->GetModelMatrix());
     program->SetUniform3f("u_viewPos", camera->GetPosition());
     program->SetUniformTexture("u_texture", *renderer->m_texture);
+    program->SetUniform1i("u_hasShadowMap", hasShadowMap);
+    program->SetUniformMatrix4fv("lightMatrix", lightMatrix);
+    if (hasShadowMap) {
+      program->SetUniformTexture("u_shadowMap", *camera->GetShadowMap(), 1);
+    }
     if (skyboxs.size() > 0) {
       program->SetUniformTexture("u_skybox", *skyboxs[0]->GetCubeMapTexture());
     }

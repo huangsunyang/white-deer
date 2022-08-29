@@ -24,7 +24,7 @@ inline string EnumToString(T e) {
   return items[index];
 }
 
-#define DECALRE_ENUM(name, ...)                \
+#define DECLARE_ENUM(name, ...)                \
   enum name { __VA_ARGS__, name##_COUNT };     \
   template <>                                  \
   inline vector<string> GetEnumItems<name>() { \

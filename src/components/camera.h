@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "components/component.h"
+#include "graphics/opengl/glrendertexture.h"
 #include "graphics/postprocess.h"
 #include "graphics/renderloop/renderloop.h"
 
@@ -36,6 +37,9 @@ class Camera : public Component {
   void Move(float, float, float);
   void Rotate(float, float);
 
+  bool HasShadowMap() { return m_hasShadowMap; }
+  shared_ptr<RenderTexture> GetShadowMap();
+
   void DoPostprocess(const Texture&);
 
   template <typename T>
@@ -53,7 +57,13 @@ class Camera : public Component {
   float m_aspect = 1920.0f / 1080.0f;
   float m_speed = 0.1f;
 
-  PostprocessType m_postprocessType{PostprocessType_Inversion};
+  // shadow map
+  bool m_hasShadowMap = true;
+  shared_ptr<RenderTexture> m_shadowMap = nullptr;
+  int m_shadowMapWidth = 1024;
+  int m_shadowMapHeight = 1024;
+
+  PostprocessType m_postprocessType{PostprocessType_None};
 };
 
 }  // namespace Engine

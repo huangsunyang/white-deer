@@ -3,11 +3,11 @@
 
 #include <glm/glm.hpp>
 
-#include "scene/scene.h"
 #include "components/camera.h"
 #include "editor/gui/editorgui.h"
 #include "graphics/opengl/glrendertexture.h"
 #include "graphics/opengl/glshader.h"
+#include "scene/scene.h"
 #include "utils/common/singleton.h"
 
 using std::string;
@@ -28,14 +28,9 @@ class GameWindow : public EditorWindow<GameWindow> {
 
   virtual void Render() {
     string name = "Game Windows";
-
-    // todo: why always sth. outside window?
     ImGui::Begin(
         name.c_str(), &m_showing,
         ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
-    ImVec2 wsize = ImGui::GetWindowSize();
-    m_width = wsize.x;
-    m_height = wsize.y;
 
     // todo: move to render loop
     auto p_scene = SceneManager::GetCurrentScene();
@@ -43,11 +38,24 @@ class GameWindow : public EditorWindow<GameWindow> {
     if (cameras.size() > 0) {
       ProcessInput(cameras[0]);
     }
-    ImGui::Image((ImTextureID)(size_t)FrameBuffer::GetInstance()
-                     ->GetDefaultColorRT()
-                     ->GetHandle(),
-                 wsize, ImVec2(0, 1), ImVec2(1, 0));
+
+    // todo: why always sth. outside window?
+    ImVec2 wsize = ImGui::GetWindowSize();
+    m_width = wsize.x;
+    m_height = wsize.y;
+    auto colorRT = FrameBuffer::GetDefault()->GetDefaultColorRT();
+    ImGui::Image((ImTextureID)(size_t)colorRT->GetHandle(), wsize, ImVec2(0, 1),
+                 ImVec2(1, 0));
     ImGui::End();
+
+    if (cameras[0]->HasShadowMap()) {
+      ImGui::Begin("shadowmap", &m_showing);
+      auto shadowMap = cameras[0]->GetShadowMap();
+      ImGui::Image((ImTextureID)(size_t)shadowMap->GetHandle(),
+                   ImVec2((float)shadowMap->GetWidth(), (float)shadowMap->GetHeight()),
+                   ImVec2(0, 1), ImVec2(1, 0));
+      ImGui::End();
+    }
   };
 
  protected:

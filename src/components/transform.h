@@ -26,6 +26,7 @@ class Transform : public Component {
   glm::mat4 GetRotationMatrix();
   glm::mat4 GetScaleMatrix();
   glm::mat4 GetModelMatrix();
+  glm::mat4 GetViewMatrix();
 
   glm::vec3 GetXDirection();
   glm::vec3 GetYDirection();

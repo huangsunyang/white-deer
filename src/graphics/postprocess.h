@@ -5,7 +5,7 @@
 #include "utils/common/enum.h"
 #include "utils/common/registry.h"
 
-DECALRE_ENUM(PostprocessType, PostprocessType_None, PostprocessType_Inversion,
+DECLARE_ENUM(PostprocessType, PostprocessType_None, PostprocessType_Inversion,
              PostprocessType_GrayScale, PostprocessType_Blur)
 
 namespace WhiteDeer {

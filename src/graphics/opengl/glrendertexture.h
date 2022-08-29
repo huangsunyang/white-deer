@@ -2,14 +2,12 @@
 
 #include "graphics/opengl/glTexture.h"
 #include "graphics/opengl/glframebuffer.h"
+#include "utils/common/enum.h"
+
+DECLARE_ENUM(RenderTextureType, RT_COLOR, RT_DEPTH_STENCIL, RT_DEPTH)
 
 namespace WhiteDeer {
 namespace Graphics {
-
-enum RenderTextureType {
-  RT_COLOR,
-  RT_DEPTH,
-};
 
 class RenderTexture : public Texture {
  public:

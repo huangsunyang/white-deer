@@ -40,9 +40,12 @@ void RenderTexture::Resize(int w, int h) {
   if (m_type == RT_COLOR) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
                  NULL);
-  } else if (m_type == RT_DEPTH) {
+  } else if (m_type == RT_DEPTH_STENCIL) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0,
                  GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+  } else if (m_type == RT_DEPTH) {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, w, h, 0,
+                 GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   } else {
     LOGE << "unknow RT type";
   }

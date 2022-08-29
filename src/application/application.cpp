@@ -117,7 +117,7 @@ void Application::MainLoop() {
   RenderLoop::DoRenderLoop();
 
   // clear color and render editor gui
-  FrameBuffer::GetInstance()->UnBind();
+  FrameBuffer::GetDefault()->UnBind();
   //   glfwGetFramebufferSize(m_window, &m_width, &m_height);
   //   glDisable(GL_DEPTH_TEST);
   GLfloat whiteColor[3] = {0.0, 0.0, 0.0};
