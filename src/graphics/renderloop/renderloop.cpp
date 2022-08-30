@@ -54,7 +54,8 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
   if (hasShadowMap) {
     auto shadowMap = camera->GetShadowMap();
     auto lightTransform = light->GetGameObject()->GetComponent<Transform>();
-    auto lightProjection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 1.0f, 7.0f);
+    auto range = camera->GetShadowMapRange();
+    auto lightProjection = glm::ortho(-range, range, -range, range, 0.01f, 10.0f);
     lightMatrix = lightProjection * lightTransform->GetViewMatrix();
     FrameBuffer::GetOrLoad("shadowmap")->BindDepth(*shadowMap);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -95,6 +96,7 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
     program->SetUniform3f("u_viewPos", camera->GetPosition());
     program->SetUniformTexture("u_texture", *renderer->m_texture);
     program->SetUniform1i("u_hasShadowMap", hasShadowMap);
+    program->SetUniform1i("u_pcfCount", camera->GetPcfCount());
     program->SetUniformMatrix4fv("lightMatrix", lightMatrix);
     if (hasShadowMap) {
       program->SetUniformTexture("u_shadowMap", *camera->GetShadowMap(), 1);

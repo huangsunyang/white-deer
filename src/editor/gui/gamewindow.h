@@ -51,8 +51,9 @@ class GameWindow : public EditorWindow<GameWindow> {
     if (cameras[0]->HasShadowMap()) {
       ImGui::Begin("shadowmap", &m_showing);
       auto shadowMap = cameras[0]->GetShadowMap();
+      wsize = ImGui::GetWindowSize();
       ImGui::Image((ImTextureID)(size_t)shadowMap->GetHandle(),
-                   ImVec2((float)shadowMap->GetWidth(), (float)shadowMap->GetHeight()),
+                   ImVec2((float)wsize.x, (float)wsize.y),
                    ImVec2(0, 1), ImVec2(1, 0));
       ImGui::End();
     }

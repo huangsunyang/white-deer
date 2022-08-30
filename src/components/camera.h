@@ -39,6 +39,8 @@ class Camera : public Component {
 
   bool HasShadowMap() { return m_hasShadowMap; }
   shared_ptr<RenderTexture> GetShadowMap();
+  float GetShadowMapRange() { return m_shadowMapRange; }
+  int GetPcfCount() { return m_pcfCount; }
 
   void DoPostprocess(const Texture&);
 
@@ -49,6 +51,13 @@ class Camera : public Component {
     transfer->Transfer("aspect", &m_aspect);
     transfer->Transfer("speed", &m_speed);
     transfer->Transfer("postprocess", &m_postprocessType);
+    transfer->Transfer("enable shadowmap", &m_hasShadowMap);
+    if (m_hasShadowMap) {
+      transfer->Transfer("enable pcf", &m_pcfCount);
+      transfer->Transfer("shadowmap width", &m_shadowMapWidth);
+      transfer->Transfer("shadowmap height", &m_shadowMapHeight);
+      transfer->Transfer("shadowmap range", &m_shadowMapRange);
+    }
   }
 
  protected:
@@ -59,9 +68,11 @@ class Camera : public Component {
 
   // shadow map
   bool m_hasShadowMap = true;
+  bool m_pcfCount = 1;
   shared_ptr<RenderTexture> m_shadowMap = nullptr;
   int m_shadowMapWidth = 1024;
   int m_shadowMapHeight = 1024;
+  float m_shadowMapRange = 10.0f;
 
   PostprocessType m_postprocessType{PostprocessType_None};
 };

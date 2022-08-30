@@ -34,6 +34,16 @@ class EditorTransfer {
   }
 
   template <>
+  void Transfer<bool>(const string& name, bool* data) {
+    ImGui::Checkbox(name.c_str(), data);
+  }
+
+  template <>
+  void Transfer<int>(const string& name, int* data) {
+    ImGui::DragInt(name.c_str(), data, 1.0f, INT_MIN, INT_MAX);
+  }
+
+  template <>
   void Transfer<float>(const string& name, float* data) {
     ImGui::DragFloat(name.c_str(), data, FLOAT_STEP, FLOAT_MIN, FLOAT_MAX,
                      "%.2f", 1.0f);

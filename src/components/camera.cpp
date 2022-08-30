@@ -63,6 +63,7 @@ shared_ptr<RenderTexture> Camera::GetShadowMap() {
   if (m_shadowMap == nullptr) {
     m_shadowMap = RenderTexture::Create(m_shadowMapWidth, m_shadowMapHeight, RT_DEPTH);
   }
+  m_shadowMap->Resize(m_shadowMapWidth, m_shadowMapHeight);
   return m_shadowMap;
 }
 

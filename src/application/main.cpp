@@ -69,7 +69,7 @@ class MainApplication : public Application {
       meshrenderer->SetMesh("cube");
       meshrenderer->SetTexture("package/textures/flower-pattern.jpg");
       meshrenderer->SetMaterial("package/shaders/test_vt.vs",
-                                "package/shaders/test_vt.fs");
+                                "package/shaders/cube.fs");
       auto lightcomp = light->AddComponent<Light>();
       //   auto lightcomp2 = light->AddComponent<Light>();
       auto transform = light->GetComponent<Transform>();
@@ -101,6 +101,18 @@ class MainApplication : public Application {
       auto camera = object->AddComponent<Camera>();
       transform->SetPosition(0, 0, 5.0f);
       camera->SetTargetPos({0, 0.1f, 0});
+    }
+
+    {
+      auto plane = scene->AddChild("plane");
+      auto transform = plane->GetComponent<Transform>();
+      transform->SetScale(155, 0.1f, 155);
+      transform->SetPosition(0, -2, 0);
+      auto meshrenderer = plane->AddComponent<MeshRenderer>();
+      meshrenderer->SetMesh("cube");
+      meshrenderer->SetTexture("package/textures/flower-pattern.jpg");
+      meshrenderer->SetMaterial("package/shaders/test_vt.vs",
+                                "package/shaders/cube.fs");
     }
   }
 };
