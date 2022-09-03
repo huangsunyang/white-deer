@@ -41,7 +41,7 @@ void Texture::load(const string& path) {
 
   glGenTextures(1, &m_handle);
   glBindTexture(GL_TEXTURE_2D, m_handle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, m_width, m_height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);

@@ -26,12 +26,16 @@ Postprocess::Postprocess(PostprocessType t) {
                     fmt::format("package/shaders/postprocess/{}.fs", name));
 }
 
-void Postprocess::Render(const Texture& t) {
+void Postprocess::Render(const Texture& from, const RenderTexture& t) {
   // apply postprocess on texture t
   // render to current framebuffer
+  auto lastFrameBuffer = FrameBuffer::GetCurrent();
+  auto tempFrameBuffer = FrameBuffer::GetOrLoad("temp");
+  tempFrameBuffer->BindColor(t);
   m_program->Use();
-  m_program->SetUniformTexture("u_screen", t);
+  m_program->SetUniformTexture("u_screen", from);
   m_quad->Draw();
+  lastFrameBuffer->RawBind();
 }
 
 }  // namespace Graphics

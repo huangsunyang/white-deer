@@ -31,7 +31,7 @@ CubeMapTexture::CubeMapTexture(std::initializer_list<string> _paths) {
       LOGE << "load cubemap failed: " << paths[i];
       continue;
     }
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height,
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB, width, height,
                  0, GL_RGB, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);
   }

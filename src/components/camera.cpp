@@ -35,7 +35,8 @@ void Camera::Move(float x, float y, float z) {
   m_pos += z * m_speed * m_dir;
   m_pos += y * m_speed * GetYDirection();
   m_pos += x * m_speed * GetXDirection();
-  m_gameobject->GetComponent<Transform>()->SetPosition(m_pos.x, m_pos.y, m_pos.z);
+  m_gameobject->GetComponent<Transform>()->SetPosition(m_pos.x, m_pos.y,
+                                                       m_pos.z);
 }
 
 void Camera::Rotate(float x, float y) {
@@ -61,22 +62,36 @@ shared_ptr<RenderTexture> Camera::GetShadowMap() {
     return nullptr;
   }
   if (m_shadowMap == nullptr) {
-    m_shadowMap = RenderTexture::Create(m_shadowMapWidth, m_shadowMapHeight, RT_DEPTH);
+    m_shadowMap =
+        RenderTexture::Create(m_shadowMapWidth, m_shadowMapHeight, RT_DEPTH);
   }
   m_shadowMap->Resize(m_shadowMapWidth, m_shadowMapHeight);
   return m_shadowMap;
 }
 
-void Camera::DoPostprocess(const Texture& texture) {
-  if (m_postprocessType == PostprocessType_None) {
+void Camera::DoPostprocess(const RenderTexture& texture) {
+  if (m_postprocessType == PostprocessType_None && !m_enableGammaCorrection) {
     return;
   }
+
   if (m_postprocessSrc == nullptr) {
-    m_postprocessSrc = RenderTexture::Create(texture.GetWidth(), texture.GetHeight(), RT_COLOR);
+    m_postprocessSrc = RenderTexture::Create(texture.GetWidth(),
+                                             texture.GetHeight(), RT_COLOR);
   }
-  m_postprocessSrc->CopyFrom(texture);
-  auto postProcess = Postprocess::GetOrLoad(m_postprocessType);
-  postProcess->Render(*m_postprocessSrc);
+
+  if (m_postprocessType != PostprocessType_None) {
+    // post process
+    m_postprocessSrc->CopyFrom(texture);
+    auto postProcess = Postprocess::GetOrLoad(m_postprocessType);
+    postProcess->Render(*m_postprocessSrc, texture);
+  }
+
+  // gamma correction
+  if (m_enableGammaCorrection) {
+    m_postprocessSrc->CopyFrom(texture);
+    auto postProcess = Postprocess::GetOrLoad(PostprocessType_Gamma);
+    postProcess->Render(*m_postprocessSrc, texture);
+  }
 }
 
 }  // namespace Engine

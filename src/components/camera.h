@@ -42,7 +42,7 @@ class Camera : public Component {
   float GetShadowMapRange() { return m_shadowMapRange; }
   int GetPcfCount() { return m_pcfCount; }
 
-  void DoPostprocess(const Texture&);
+  void DoPostprocess(const RenderTexture&);
 
   template <typename T>
   void Transfer(T* transfer, const string& name) {
@@ -51,6 +51,7 @@ class Camera : public Component {
     transfer->Transfer("aspect", &m_aspect);
     transfer->Transfer("speed", &m_speed);
     transfer->Transfer("postprocess", &m_postprocessType);
+    transfer->Transfer("gamma correction", &m_enableGammaCorrection);
     transfer->Transfer("enable shadowmap", &m_hasShadowMap);
     if (m_hasShadowMap) {
       transfer->Transfer("enable pcf", &m_pcfCount);
@@ -75,6 +76,7 @@ class Camera : public Component {
   float m_shadowMapRange = 10.0f;
 
   // postprocess
+  bool m_enableGammaCorrection = true;
   shared_ptr<RenderTexture> m_postprocessSrc;
   PostprocessType m_postprocessType{PostprocessType_None};
 };
