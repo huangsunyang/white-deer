@@ -1,4 +1,6 @@
 #include "graphics/opengl/glrendertexture.h"
+#include "graphics/opengl/glshader.h"
+#include "graphics/opengl/glmesh.h"
 
 #include "log/log.h"
 
@@ -53,6 +55,19 @@ void RenderTexture::Resize(int w, int h) {
   } else {
     LOGE << "unknow RT type";
   }
+}
+
+void RenderTexture::CopyFrom(const Texture& other) {
+  Resize(other.GetWidth(), other.GetHeight());
+  auto lastFrameBuffer = FrameBuffer::GetCurrent();
+  auto framebuffer = FrameBuffer::GetOrLoad("temp");
+  framebuffer->BindColor(*this);
+  static shared_ptr<Program> program = Program::Load("package/shaders/postprocess/postprocess.vs", "package/shaders/postprocess/copy.fs");
+  auto mesh = Mesh::GetOrLoad("quad");
+  program->Use();
+  program->SetUniformTexture("u_screen", other);
+  mesh->Draw();
+  lastFrameBuffer->RawBind();
 }
 
 }  // namespace Graphics

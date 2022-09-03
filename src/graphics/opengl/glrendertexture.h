@@ -13,6 +13,7 @@ class RenderTexture : public Texture {
  public:
   static shared_ptr<RenderTexture> Create(int w, int h, RenderTextureType);
   void Resize(int w, int h);
+  void CopyFrom(const Texture&);
 
  protected:
   RenderTexture(int, int, RenderTextureType);

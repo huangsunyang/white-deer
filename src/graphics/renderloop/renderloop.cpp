@@ -17,7 +17,7 @@ using namespace WhiteDeer::Editor;
 
 void RenderLoop::DoForwardRenderLoop() {
   // clear default framebuffer
-  FrameBuffer::GetDefault()->Bind();
+  FrameBuffer::GetDefault()->BindScreen();
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
@@ -76,7 +76,7 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
 
   // todo: bind custom render texture
   FrameBuffer::GetDefault()->UnBind();
-  FrameBuffer::GetDefault()->Bind();
+  FrameBuffer::GetDefault()->BindScreen();
   auto colorRT = FrameBuffer::GetDefault()->GetDefaultColorRT();
   camera->SetAspect(colorRT->GetWidth() * 1.0f / colorRT->GetHeight());
   glViewport(0, 0, colorRT->GetWidth(), colorRT->GetHeight());

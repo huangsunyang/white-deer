@@ -7,13 +7,15 @@
 namespace WhiteDeer {
 
 namespace Utils {
-  using Graphics::FrameBuffer;
-  map<string, shared_ptr<FrameBuffer>> FrameBuffer::s_entries;
-}
+using Graphics::FrameBuffer;
+map<string, shared_ptr<FrameBuffer>> FrameBuffer::s_entries;
+}  // namespace Utils
 
 namespace Graphics {
 
 using Editor::GameWindow;
+
+FrameBuffer* FrameBuffer::s_current = nullptr;
 
 FrameBuffer::FrameBuffer(const string& name) {
   // create frame buffer
@@ -30,9 +32,13 @@ FrameBuffer::~FrameBuffer() {
   glDeleteFramebuffers(1, &m_fbo);
 }
 
-void FrameBuffer::Bind() const {
-  // bind default texture
-  // resize to window size
+void FrameBuffer::RawBind() {
+  s_current = this;
+  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+}
+
+void FrameBuffer::BindScreen() {
+  // bind to game window
   auto width = GameWindow::GetInstance()->GetWidth();
   auto height = GameWindow::GetInstance()->GetHeight();
   m_defaultcolor->Resize((int)width, (int)height);
@@ -40,9 +46,8 @@ void FrameBuffer::Bind() const {
   Bind(*m_defaultcolor, *m_defaultdepth);
 }
 
-void FrameBuffer::Bind(const RenderTexture& color,
-                       const RenderTexture& depth) const {
-  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+void FrameBuffer::Bind(const RenderTexture& color, const RenderTexture& depth) {
+  RawBind();
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          color.GetHandle(), 0);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
@@ -51,16 +56,29 @@ void FrameBuffer::Bind(const RenderTexture& color,
   glReadBuffer(GL_COLOR_ATTACHMENT0);
 }
 
-void FrameBuffer::BindDepth(const RenderTexture& depth) const {
-  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+void FrameBuffer::BindColor(const RenderTexture& color) {
+  RawBind();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         color.GetHandle(), 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0,
+                         0);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  glReadBuffer(GL_COLOR_ATTACHMENT0);
+}
+
+void FrameBuffer::BindDepth(const RenderTexture& depth) {
+  RawBind();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0,
+                         0);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                          depth.GetHandle(), 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
 }
 
-void FrameBuffer::UnBind() const {
+void FrameBuffer::UnBind() {
   // unbind frame buffer
+  s_current = nullptr;
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

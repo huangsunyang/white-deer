@@ -71,8 +71,12 @@ void Camera::DoPostprocess(const Texture& texture) {
   if (m_postprocessType == PostprocessType_None) {
     return;
   }
+  if (m_postprocessSrc == nullptr) {
+    m_postprocessSrc = RenderTexture::Create(texture.GetWidth(), texture.GetHeight(), RT_COLOR);
+  }
+  m_postprocessSrc->CopyFrom(texture);
   auto postProcess = Postprocess::GetOrLoad(m_postprocessType);
-  postProcess->Render(texture);
+  postProcess->Render(*m_postprocessSrc);
 }
 
 }  // namespace Engine

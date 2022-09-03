@@ -27,6 +27,8 @@ Postprocess::Postprocess(PostprocessType t) {
 }
 
 void Postprocess::Render(const Texture& t) {
+  // apply postprocess on texture t
+  // render to current framebuffer
   m_program->Use();
   m_program->SetUniformTexture("u_screen", t);
   m_quad->Draw();

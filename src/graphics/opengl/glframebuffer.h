@@ -18,23 +18,33 @@ class FrameBuffer : public StaticNamedPool<string, FrameBuffer> {
 
  public:
   virtual ~FrameBuffer();
-  void Bind() const;
-  void Bind(const RenderTexture&, const RenderTexture&) const;
-  void BindDepth(const RenderTexture&) const;
-  void UnBind() const;
-  shared_ptr<RenderTexture> GetDefaultColorRT() { return m_defaultcolor; }
-  shared_ptr<RenderTexture> GetDefaultDepthRT() { return m_defaultdepth; }
+  void RawBind();
+  void Bind(const RenderTexture&, const RenderTexture&);
+  void BindScreen();
+  void BindColor(const RenderTexture&);
+  void BindDepth(const RenderTexture&);
+  void UnBind();
+  shared_ptr<RenderTexture> GetDefaultColorRT() const { return m_defaultcolor; }
+  shared_ptr<RenderTexture> GetDefaultDepthRT() const { return m_defaultdepth; }
+  shared_ptr<RenderTexture> GetCurrentColorRT() const { return m_currentcolor; }
+  shared_ptr<RenderTexture> GetCurrentDepthRT() const { return m_currentdepth; }
 
-  static shared_ptr<FrameBuffer> GetDefault() {return FrameBuffer::GetOrLoad("default");}
-
+  static shared_ptr<FrameBuffer> GetDefault() {
+    return FrameBuffer::GetOrLoad("default");
+  }
+  static FrameBuffer * GetCurrent() { return s_current; }
 
  protected:
   FrameBuffer(const string& name);
 
   shared_ptr<RenderTexture> m_defaultcolor;
   shared_ptr<RenderTexture> m_defaultdepth;
+  shared_ptr<RenderTexture> m_currentcolor;
+  shared_ptr<RenderTexture> m_currentdepth;
   GLuint m_fbo;
   string m_name;
+
+  static FrameBuffer * s_current;
 };
 
 }  // namespace Graphics

@@ -74,6 +74,8 @@ class Camera : public Component {
   int m_shadowMapHeight = 1024;
   float m_shadowMapRange = 10.0f;
 
+  // postprocess
+  shared_ptr<RenderTexture> m_postprocessSrc;
   PostprocessType m_postprocessType{PostprocessType_None};
 };
 
