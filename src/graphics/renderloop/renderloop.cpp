@@ -32,6 +32,8 @@ void RenderLoop::DoForwardRenderLoop() {
   for (auto camera : cameras) {
     RenderSingleCamera(camera);
   }
+
+  glDeleteVertexArrays(1, &vao);
 }
 
 void RenderLoop::RenderSingleCamera(Camera* camera) {
