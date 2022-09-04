@@ -42,7 +42,8 @@ class Camera : public Component {
   float GetShadowMapRange() { return m_shadowMapRange; }
   int GetPcfCount() { return m_pcfCount; }
 
-  void DoPostprocess(const RenderTexture&);
+  void DoPostprocess(RenderTexture&);
+  bool EnableHDR() { return m_enableHDR; }
 
   template <typename T>
   void Transfer(T* transfer, const string& name) {
@@ -52,6 +53,9 @@ class Camera : public Component {
     transfer->Transfer("speed", &m_speed);
     transfer->Transfer("postprocess", &m_postprocessType);
     transfer->Transfer("gamma correction", &m_enableGammaCorrection);
+    transfer->Transfer("HDR", &m_enableHDR);
+    transfer->Transfer("bloom", &m_enableBloom);
+    transfer->Transfer("bloom blur", &m_bloomBlurCount);
     transfer->Transfer("enable shadowmap", &m_hasShadowMap);
     if (m_hasShadowMap) {
       transfer->Transfer("enable pcf", &m_pcfCount);
@@ -62,6 +66,8 @@ class Camera : public Component {
   }
 
  protected:
+  shared_ptr<RenderTexture> GetPostprocessSrc(int idx, int width, int height);
+
   glm::vec3 m_dir = {0, 0, -1};
   float m_fov = 45.0f;
   float m_aspect = 1920.0f / 1080.0f;
@@ -73,11 +79,14 @@ class Camera : public Component {
   shared_ptr<RenderTexture> m_shadowMap = nullptr;
   int m_shadowMapWidth = 1024;
   int m_shadowMapHeight = 1024;
-  float m_shadowMapRange = 10.0f;
+  float m_shadowMapRange = 4.0f;
 
   // postprocess
+  bool m_enableHDR = false;
+  bool m_enableBloom = false;
+  int m_bloomBlurCount = 0;
   bool m_enableGammaCorrection = true;
-  shared_ptr<RenderTexture> m_postprocessSrc;
+  vector<shared_ptr<RenderTexture>> m_postprocessSrcs;
   PostprocessType m_postprocessType{PostprocessType_None};
 };
 

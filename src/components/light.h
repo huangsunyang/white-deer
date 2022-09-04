@@ -29,6 +29,7 @@ class Light : public Component {
   void Transfer(T* transfer, const string& name) {
     transfer->Transfer("type", &m_type);
     transfer->Transfer("color", &m_color);
+    transfer->Transfer("strength", &m_strength);
 
     if (m_type != LightType_Direction) {
       transfer->Transfer("constant", &m_constant);
@@ -45,6 +46,7 @@ class Light : public Component {
   LightType m_type{LightType_Direction};
 
   glm::vec3 m_color{1.0f, 1.0f, 1.0f};
+  float m_strength{1.0f};
 
   // point light
   float m_constant{1.0f};

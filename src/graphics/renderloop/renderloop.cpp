@@ -75,9 +75,9 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
   }
 
   // todo: bind custom render texture
-  FrameBuffer::GetDefault()->UnBind();
   FrameBuffer::GetDefault()->BindScreen();
   auto colorRT = FrameBuffer::GetDefault()->GetDefaultColorRT();
+  colorRT->SetFormat(camera->EnableHDR() ? RTF_FLOAT : RTF_AUTO);
   camera->SetAspect(colorRT->GetWidth() * 1.0f / colorRT->GetHeight());
   glViewport(0, 0, colorRT->GetWidth(), colorRT->GetHeight());
 

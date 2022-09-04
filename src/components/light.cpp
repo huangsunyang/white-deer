@@ -14,6 +14,7 @@ void Light::Use(shared_ptr<Program> program, int index) {
   program->SetUniform3f(lightIndex + ".pos", transform->GetPosition());
   program->SetUniform3f(lightIndex + ".dir", transform->GetZDirection());
   program->SetUniform3f(lightIndex + ".color", GetColor());
+  program->SetUniform1f(lightIndex + ".strength", m_strength);
 
   if (m_type != LightType_Direction) {
     program->SetUniform1f(lightIndex + ".constant", m_constant);

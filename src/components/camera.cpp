@@ -69,28 +69,67 @@ shared_ptr<RenderTexture> Camera::GetShadowMap() {
   return m_shadowMap;
 }
 
-void Camera::DoPostprocess(const RenderTexture& texture) {
-  if (m_postprocessType == PostprocessType_None && !m_enableGammaCorrection) {
+shared_ptr<RenderTexture> Camera::GetPostprocessSrc(int index, int width,
+                                                    int height) {
+  while (index >= m_postprocessSrcs.size()) {
+    m_postprocessSrcs.push_back(RenderTexture::Create(width, height, RT_COLOR));
+  }
+  auto& ret = m_postprocessSrcs[index];
+  ret->Resize(width, height);
+  ret->SetFormat(m_enableHDR ? RTF_FLOAT : RTF_AUTO);
+  return ret;
+}
+
+void Camera::DoPostprocess(RenderTexture& targetRT) {
+  if (m_postprocessType == PostprocessType_None && !m_enableGammaCorrection &&
+      !m_enableHDR && !m_enableBloom) {
     return;
   }
 
-  if (m_postprocessSrc == nullptr) {
-    m_postprocessSrc = RenderTexture::Create(texture.GetWidth(),
-                                             texture.GetHeight(), RT_COLOR);
+  auto tempRT0 =
+      GetPostprocessSrc(0, targetRT.GetWidth(), targetRT.GetHeight());
+
+  // Bloom
+  if (m_enableBloom) {
+    // first extract light region
+    auto postProcess = Postprocess::GetOrLoad(PostprocessType_ExtractLight);
+    postProcess->Render(*tempRT0, targetRT);
+
+    // temp0 --hblur--> temp1
+    // temp1 --vblur--> temp0
+    auto tempRT1 =
+        GetPostprocessSrc(1, targetRT.GetWidth(), targetRT.GetHeight());
+    tempRT1->CopyFrom(*tempRT0);
+    for (int i = 0; i < m_bloomBlurCount; i++) {
+      auto blurh = Postprocess::GetOrLoad(PostprocessType_BlurH);
+      auto blurv = Postprocess::GetOrLoad(PostprocessType_BlurV);
+      blurh->Render(*tempRT1, *tempRT0);
+      blurv->Render(*tempRT0, *tempRT1);
+    }
+
+    auto bloom = Postprocess::GetOrLoad(PostprocessType_Bloom);
+    bloom->Render(targetRT, targetRT, *tempRT0);
   }
 
   if (m_postprocessType != PostprocessType_None) {
     // post process
-    m_postprocessSrc->CopyFrom(texture);
+    tempRT0->CopyFrom(targetRT);
     auto postProcess = Postprocess::GetOrLoad(m_postprocessType);
-    postProcess->Render(*m_postprocessSrc, texture);
+    postProcess->Render(targetRT, *tempRT0);
+  }
+
+  // HDR
+  if (m_enableHDR) {
+    tempRT0->CopyFrom(targetRT);
+    auto postProcess = Postprocess::GetOrLoad(PostprocessType_HDR);
+    postProcess->Render(targetRT, *tempRT0);
   }
 
   // gamma correction
   if (m_enableGammaCorrection) {
-    m_postprocessSrc->CopyFrom(texture);
+    tempRT0->CopyFrom(targetRT);
     auto postProcess = Postprocess::GetOrLoad(PostprocessType_Gamma);
-    postProcess->Render(*m_postprocessSrc, texture);
+    postProcess->Render(targetRT, *tempRT0);
   }
 }
 

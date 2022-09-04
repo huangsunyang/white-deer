@@ -25,6 +25,7 @@ struct Light {
   vec3 pos;
   vec3 dir;
   vec3 color;
+  float strength;
 
   // attenuation
   float constant;
@@ -115,7 +116,7 @@ vec3 CalculateLight(int i) {
 
   // final color
   float shadow = CalculateShadow();
-  return ambient + (diffuse + specular) * cutoffIntensity * shadow * attenuation;
+  return (ambient + (diffuse + specular) * cutoffIntensity * shadow * attenuation) * u_light.strength;
 }
 
 void main() {

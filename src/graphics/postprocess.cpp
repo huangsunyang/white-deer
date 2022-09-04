@@ -26,14 +26,24 @@ Postprocess::Postprocess(PostprocessType t) {
                     fmt::format("package/shaders/postprocess/{}.fs", name));
 }
 
-void Postprocess::Render(const Texture& from, const RenderTexture& t) {
+void Postprocess::Render(const RenderTexture& to,
+                         std::initializer_list<const Texture *> froms) {
   // apply postprocess on texture t
   // render to current framebuffer
   auto lastFrameBuffer = FrameBuffer::GetCurrent();
   auto tempFrameBuffer = FrameBuffer::GetOrLoad("temp");
-  tempFrameBuffer->BindColor(t);
+  tempFrameBuffer->BindColor(to);
   m_program->Use();
-  m_program->SetUniformTexture("u_screen", from);
+
+  // set texture uniforms
+  int i = 0;
+  for (auto& from : froms) {
+    if (i == 0) {
+      m_program->SetUniformTexture("u_screen", *from, i);
+    }
+    m_program->SetUniformTexture(fmt::format("u_screen{0}", i), *from, i);
+    i++;
+  }
   m_quad->Draw();
   lastFrameBuffer->RawBind();
 }
