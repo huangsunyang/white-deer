@@ -34,6 +34,9 @@ class Camera : public Component {
   void SetTargetPos(glm::vec3 p) { m_dir = glm::normalize(p - GetPosition()); }
   glm::vec3 GetTargetPos() { return m_dir + GetPosition(); }
 
+  bool EnableFrustrumCulling() { return m_enableFrustrumCulling; }
+  void Cull(vector<Renderer*>& renderers);
+
   void Move(float, float, float);
   void Rotate(float, float);
 
@@ -51,6 +54,7 @@ class Camera : public Component {
     transfer->Transfer("fov", &m_fov);
     transfer->Transfer("aspect", &m_aspect);
     transfer->Transfer("speed", &m_speed);
+    transfer->Transfer("frustrum culling", &m_enableFrustrumCulling);
     transfer->Transfer("postprocess", &m_postprocessType);
     transfer->Transfer("gamma correction", &m_enableGammaCorrection);
     transfer->Transfer("HDR", &m_enableHDR);
@@ -72,6 +76,9 @@ class Camera : public Component {
   float m_fov = 45.0f;
   float m_aspect = 1920.0f / 1080.0f;
   float m_speed = 0.1f;
+
+  // culling
+  bool m_enableFrustrumCulling;
 
   // shadow map
   bool m_hasShadowMap = true;

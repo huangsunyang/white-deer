@@ -229,6 +229,8 @@ void Mesh::prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo,
                        const VertexAttribList& attribs) {
   m_attribs = attribs;
 
+  CalculateAABB(vbo);
+
   // submit vbo buffer
   glGenBuffers(1, &m_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
@@ -247,6 +249,20 @@ void Mesh::prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo,
     m_vertexcount = (int)ebo.size();
     m_useebo = true;
   }
+}
+
+void Mesh::CalculateAABB(const vector<GLfloat>& points) {
+    int i = 0;
+    int size = GetVertexSize();
+    vec3 _min {-1000, -1000, -1000}, _max {1000, 1000, 1000};
+    while (i < points.size()) {
+        for (int j = 0; j < 3; j++) {
+            _min[j] = std::min(points[i + j], _min[j]);
+            _max[j] = std::max(points[i + j], _max[j]);
+        }
+        i += size;
+    }
+    m_aabb = AABB{_min, _max};
 }
 
 int Mesh::GetVertexSize() {

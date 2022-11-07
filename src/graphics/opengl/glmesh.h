@@ -8,6 +8,7 @@
 #include "graphics/opengl/gltexture.h"
 #include "graphics/opengl/glvertexattrib.h"
 #include "utils/common/registry.h"
+#include "utils/common/physics.h"
 #include "components/renderer.h"
 
 using std::string;
@@ -39,6 +40,8 @@ class Mesh : public StaticNamedPool<string, Mesh> {
   int GetVertexStride();
   int GetVertexSize();
 
+  void CalculateAABB(const vector<GLfloat>&);
+
   GLuint m_vbo;
   GLuint m_ebo;
   GLuint m_vertexcount;
@@ -46,6 +49,8 @@ class Mesh : public StaticNamedPool<string, Mesh> {
 
   VertexAttribList m_attribs;
   vector<shared_ptr<Texture>> m_textures;
+
+  AABB m_aabb;
 };
 
 }  // namespace Graphics

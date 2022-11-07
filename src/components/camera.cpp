@@ -133,5 +133,14 @@ void Camera::DoPostprocess(RenderTexture& targetRT) {
   }
 }
 
+void Camera::Cull(vector<Renderer*>& renderers)
+{
+    LOGD << "frustrum culling";
+    for (auto p_renderer: renderers) {
+        // current only mesh renderer
+        assert(p_renderer->IsInstanceOf<MeshRenderer>());
+    }
+}
+
 }  // namespace Engine
 }  // namespace WhiteDeer

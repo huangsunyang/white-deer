@@ -42,6 +42,11 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
   auto lights = p_scene->GetComponentsInChildren<Light>();
   auto skyboxs = p_scene->GetComponentsInChildren<SkyBox>();
 
+  // frustrum culling
+  if (camera->EnableFrustrumCulling()) {
+    camera->Cull(renderers);
+  }
+
   // find a directional light
   Light* light = nullptr;
   for (auto& _light : lights) {
