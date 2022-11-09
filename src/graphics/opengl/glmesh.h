@@ -5,11 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "components/renderer.h"
 #include "graphics/opengl/gltexture.h"
 #include "graphics/opengl/glvertexattrib.h"
-#include "utils/common/registry.h"
 #include "utils/common/physics.h"
-#include "components/renderer.h"
+#include "utils/common/registry.h"
 
 using std::string;
 using std::vector;
@@ -23,6 +23,8 @@ class Mesh : public StaticNamedPool<string, Mesh> {
 
  public:
   void Draw();
+  AABB GetAABB() { return m_aabb; }
+
  protected:
   Mesh(const string& path) { load(path); }
   Mesh(const string& noname, const vector<GLfloat>& points,

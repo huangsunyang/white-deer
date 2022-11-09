@@ -35,6 +35,7 @@ class Camera : public Component {
   glm::vec3 GetTargetPos() { return m_dir + GetPosition(); }
 
   bool EnableFrustrumCulling() { return m_enableFrustrumCulling; }
+  vector<Plane> ExtractFrustrumPlanes();
   void Cull(vector<Renderer*>& renderers);
 
   void Move(float, float, float);
@@ -74,6 +75,8 @@ class Camera : public Component {
 
   glm::vec3 m_dir = {0, 0, -1};
   float m_fov = 45.0f;
+  float m_near = 0.1f;
+  float m_far = 100.0f;
   float m_aspect = 1920.0f / 1080.0f;
   float m_speed = 0.1f;
 

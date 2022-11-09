@@ -254,15 +254,14 @@ void Mesh::prepareData(const vector<GLfloat>& vbo, const vector<GLuint>& ebo,
 void Mesh::CalculateAABB(const vector<GLfloat>& points) {
     int i = 0;
     int size = GetVertexSize();
-    vec3 _min {-1000, -1000, -1000}, _max {1000, 1000, 1000};
+    vec3 center{0, 0, 0}, extent{0, 0, 0};
     while (i < points.size()) {
         for (int j = 0; j < 3; j++) {
-            _min[j] = std::min(points[i + j], _min[j]);
-            _max[j] = std::max(points[i + j], _max[j]);
+            extent[j] = std::max(std::fabs(points[i + j]), extent[j]);
         }
         i += size;
     }
-    m_aabb = AABB{_min, _max};
+    m_aabb = AABB{center, extent};
 }
 
 int Mesh::GetVertexSize() {

@@ -26,7 +26,7 @@ glm::mat4 Camera::GetViewMatrix() {
 }
 
 glm::mat4 Camera::GetProjectionMatrix() {
-  return glm::perspective(glm::radians(m_fov), m_aspect, 0.1f, 100.0f);
+  return glm::perspective(glm::radians(m_fov), m_aspect, m_near, m_far);
 }
 
 void Camera::Move(float x, float y, float z) {
@@ -133,12 +133,60 @@ void Camera::DoPostprocess(RenderTexture& targetRT) {
   }
 }
 
-void Camera::Cull(vector<Renderer*>& renderers)
-{
-    LOGD << "frustrum culling";
-    for (auto p_renderer: renderers) {
+vector<Plane> Camera::ExtractFrustrumPlanes() {
+    // extract frustrum planes
+    vector<Plane> planes;
+    auto position = GetPosition();
+    auto right = GetXDirection(), up = GetYDirection();
+
+    planes.push_back(Plane::FromNormalAndPoint(m_dir, position + m_dir * m_near));  // near
+    planes.push_back(Plane::FromNormalAndPoint(-m_dir, position + m_dir * m_far));  // far
+
+    auto far_height = glm::tan(m_fov / 2);
+    auto far_width = far_height * m_aspect;
+    vec3 left_vec = -far_width / 2 * right + m_far * m_dir;
+    vec3 right_vec = far_width / 2 * right + m_far * m_dir;
+    vec3 up_vec = far_height / 2 * up + m_far * m_dir;
+    vec3 down_vec = -far_height / 2 * up + m_far * m_dir;
+
+    planes.push_back(Plane::FromNormalAndPoint(glm::cross(up, left_vec), position));  // left
+    planes.push_back(Plane::FromNormalAndPoint(glm::cross(right_vec, up), position));  // right
+    planes.push_back(Plane::FromNormalAndPoint(glm::cross(right, up_vec), position));  // up
+    planes.push_back(Plane::FromNormalAndPoint(glm::cross(down_vec, right), position));  // down
+
+    return planes;
+}
+
+void Camera::Cull(vector<Renderer*>& renderers) {
+    auto planes = ExtractFrustrumPlanes();
+
+    int valid = 0;
+    for (int i = 0; i < renderers.size(); i++) {
         // current only mesh renderer
+        auto p_renderer = renderers[i];
         assert(p_renderer->IsInstanceOf<MeshRenderer>());
+
+        // outside one plane is invisible
+        bool visible = true;
+        for (auto& plane: planes) {
+            if (plane.IntersectAABB(p_renderer->GetWorldAABB()) == 1) {
+                visible = false;
+                break;
+            }
+        }
+
+        if (visible) {
+            renderers[valid++] = renderers[i];
+        }
+    }
+
+    if (valid < renderers.size()) {
+        LOGE << valid << " " << renderers.size();
+    }
+
+    // remove unused slots
+    while (renderers.size() > valid) {
+        renderers.pop_back();
     }
 }
 

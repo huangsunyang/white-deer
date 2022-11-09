@@ -4,6 +4,7 @@
 #include "graphics/opengl/glTexture.h"
 #include "graphics/opengl/glmaterial.h"
 #include "graphics/renderloop/renderloop.h"
+#include "utils/common/physics.h"
 
 namespace WhiteDeer {
 
@@ -14,6 +15,7 @@ class Mesh;
 namespace Engine {
 
 using namespace Graphics;
+using namespace Utils;
 
 class Renderer : public Component {
   DECLARE_COMPONENT(Renderer)
@@ -21,6 +23,8 @@ class Renderer : public Component {
 
  public:
   virtual shared_ptr<Material> GetMaterial() { return m_material; }
+  virtual AABB GetLocalAABB();
+  virtual AABB GetWorldAABB();
 
   template <typename T>
   void Transfer(T* transfer, const string& name) {
