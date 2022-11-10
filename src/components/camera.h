@@ -81,7 +81,7 @@ class Camera : public Component {
   float m_speed = 0.1f;
 
   // culling
-  bool m_enableFrustrumCulling;
+  bool m_enableFrustrumCulling = true;
 
   // shadow map
   bool m_hasShadowMap = true;

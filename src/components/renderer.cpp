@@ -19,7 +19,23 @@ AABB Renderer::GetWorldAABB() {
   return localAABB;
 }
 
-void MeshRenderer::Render() { m_mesh->Draw(); }
+void MeshRenderer::Render() {
+  m_mesh->Draw();
+
+  if (m_showBoundingBox) {
+    if (!m_boundingMesh.get()) {
+      m_boundingMesh = Mesh::GetOrLoad("cube");
+    }
+
+    // hack
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    auto transform = m_gameobject->GetComponent<Transform>();
+    auto modelMatrix = transform->GetModelMatrix() * glm::scale(glm::mat4(1.0f), m_mesh->GetAABB().extent * 2.0f);
+    m_material->GetProgram()->SetUniformMatrix4fv("model", modelMatrix);
+    m_boundingMesh->Draw();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
+}
 
 }  // namespace Engine
 }  // namespace WhiteDeer

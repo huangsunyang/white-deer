@@ -142,7 +142,7 @@ vector<Plane> Camera::ExtractFrustrumPlanes() {
     planes.push_back(Plane::FromNormalAndPoint(m_dir, position + m_dir * m_near));  // near
     planes.push_back(Plane::FromNormalAndPoint(-m_dir, position + m_dir * m_far));  // far
 
-    auto far_height = glm::tan(m_fov / 2);
+    auto far_height = glm::tan(glm::radians(m_fov) / 2) * m_far * 2;
     auto far_width = far_height * m_aspect;
     vec3 left_vec = -far_width / 2 * right + m_far * m_dir;
     vec3 right_vec = far_width / 2 * right + m_far * m_dir;

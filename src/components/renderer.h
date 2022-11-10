@@ -28,14 +28,18 @@ class Renderer : public Component {
 
   template <typename T>
   void Transfer(T* transfer, const string& name) {
+    transfer->Transfer("show bounding box", &m_showBoundingBox);
     transfer->Transfer("material", m_material.get());
   }
 
  protected:
   virtual void Render() {}
 
+  bool m_showBoundingBox = true;
+
   shared_ptr<Texture> m_texture;
   shared_ptr<Mesh> m_mesh;
+  shared_ptr<Mesh> m_boundingMesh;
   shared_ptr<Material> m_material;
 };
 
