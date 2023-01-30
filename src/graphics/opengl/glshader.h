@@ -50,9 +50,12 @@ class Shader : public StaticNamedPool<string, Shader> {
   static auto &GetAllShaders() { return GetEntries(); }
   static void ReloadAll();
 
+  Shader(const string &s, int t) { load(s, t); }
+
  protected:
   Shader(const string &s) { load(s); }
   void load(const string &);
+  void load(const string &, int);
 
   string m_name;
   GLuint m_handle;
@@ -103,9 +106,11 @@ class Program {
  protected:
   Program() { m_handle = glCreateProgram(); }
 
+  void load(const string &path);
   void load(std::initializer_list<string> paths);
   void load(const vector<string> &paths);
 
+  string m_name;
   GLuint m_handle;
   set<shared_ptr<Shader>> m_shaders;
 

@@ -37,8 +37,11 @@ void Shader::load(const string &path) {
   std::fstream f(abspath.string());
   std::stringstream buffer;
   buffer << f.rdbuf();
-  auto str = buffer.str();
-  auto cstr = str.c_str();
+  load(buffer.str(), shaderType);
+}
+
+void Shader::load(const string &data, int type) {
+  auto cstr = data.c_str();
   glShaderSource(m_handle, 1, &cstr, NULL);
   glCompileShader(m_handle);
 
@@ -109,18 +112,57 @@ void Program::load(const vector<string> &paths) {
   }
 }
 
+void Program::load(const string &path) {
+  auto localfs = GetLocalFileSystem();
+  auto abspath = localfs->ToAbsolute(path);
+
+  if (!fs::exists(abspath)) {
+    LOGE << abspath << " not exists";
+  }
+
+  m_name = path;
+
+  std::ifstream f(abspath);
+  string vs_contents, fs_contents;
+
+  string line;
+  auto is_fs = false;
+  while (std::getline(f, line)) {
+    if (line == "// fs") {
+      is_fs = true;
+      continue;
+    }
+
+    auto& content = is_fs ? fs_contents : vs_contents;
+    content += line;
+  }
+
+  m_shaders.insert(std::make_shared<Shader>(vs_contents, GL_VERTEX_SHADER));
+  m_shaders.insert(std::make_shared<Shader>(fs_contents, GL_FRAGMENT_SHADER));
+
+  for (auto &p : m_shaders) {
+    glAttachShader(m_handle, p->m_handle);
+  }
+  glLinkProgram(m_handle);
+}
+
 Program::~Program() { glDeleteProgram(m_handle); }
 
 void Program::Refresh() {
-  vector<string> vec;
-  for (auto &p : m_shaders) {
-    glDetachShader(m_handle, p->m_handle);
-    vec.push_back(p->m_name);
-  }
   m_shaders.clear();
 
-  // reload
-  load(vec);
+  if (m_name.empty()) {
+    vector<string> vec;
+    for (auto &p : m_shaders) {
+      glDetachShader(m_handle, p->m_handle);
+      vec.push_back(p->m_name);
+    }
+
+    // reload
+    load(vec);
+  } else {
+    load(m_name);
+  }
 }
 
 void Program::RefreshAll() {
