@@ -99,6 +99,15 @@ class Program {
     return p_program;
   }
 
+  template <>
+  static shared_ptr<Program> Load<char const *>(const char * const path) {
+    shared_ptr<Program> p_program(new Program);
+    string temp(path);
+    p_program->load(temp);
+    s_programs.insert(p_program);
+    return p_program;
+  }
+
   static void Delete(const string &);
   static void RefreshAll();
   static auto &GetAllPrograms() { return s_programs; };
@@ -109,6 +118,8 @@ class Program {
   void load(const string &path);
   void load(std::initializer_list<string> paths);
   void load(const vector<string> &paths);
+
+  void CheckStatus();
 
   string m_name;
   GLuint m_handle;

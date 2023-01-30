@@ -48,8 +48,7 @@ class MainApplication : public Application {
       auto meshrenderer = obj->AddComponent<MeshRenderer>();
       meshrenderer->SetMesh("package/models/f16/f16.obj");
       meshrenderer->SetTexture("package/models/f16/f16s.bmp");
-      meshrenderer->SetMaterial("package/shaders/test_vnt.vs",
-                                "package/shaders/test_vnt.fs");
+      meshrenderer->SetMaterial("package/shaders/test_vnt.shader");
     }
 
     {

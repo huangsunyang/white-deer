@@ -32,7 +32,6 @@ void Shader::load(const string &path) {
   // todo: more shader type
   auto shaderType =
       endswith(path, ".vs") ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
-  m_handle = glCreateShader(shaderType);
 
   std::fstream f(abspath.string());
   std::stringstream buffer;
@@ -42,6 +41,7 @@ void Shader::load(const string &path) {
 
 void Shader::load(const string &data, int type) {
   auto cstr = data.c_str();
+  m_handle = glCreateShader(type);
   glShaderSource(m_handle, 1, &cstr, NULL);
   glCompileShader(m_handle);
 
@@ -89,6 +89,10 @@ void Program::load(const vector<string> &paths) {
   }
   glLinkProgram(m_handle);
 
+  CheckStatus();
+}
+
+void Program::CheckStatus() {
   // check link status
   int success;
   char infoLog[512];
@@ -133,8 +137,13 @@ void Program::load(const string &path) {
       continue;
     }
 
+    if (line == "// vs") {
+      continue;
+    }
+
     auto& content = is_fs ? fs_contents : vs_contents;
     content += line;
+    content += '\n';
   }
 
   m_shaders.insert(std::make_shared<Shader>(vs_contents, GL_VERTEX_SHADER));
@@ -144,12 +153,13 @@ void Program::load(const string &path) {
     glAttachShader(m_handle, p->m_handle);
   }
   glLinkProgram(m_handle);
+
+  CheckStatus();
 }
 
 Program::~Program() { glDeleteProgram(m_handle); }
 
 void Program::Refresh() {
-  m_shaders.clear();
 
   if (m_name.empty()) {
     vector<string> vec;
@@ -158,9 +168,14 @@ void Program::Refresh() {
       vec.push_back(p->m_name);
     }
 
+    m_shaders.clear();
     // reload
     load(vec);
   } else {
+    for (auto &p : m_shaders) {
+      glDetachShader(m_handle, p->m_handle);
+    }
+    m_shaders.clear();
     load(m_name);
   }
 }
