@@ -1,3 +1,8 @@
+
+#include "antlr4-runtime.h"
+#include "GLSLParser.h"
+#include "GLSLLexer.h"
+
 #define NOMINMAX 1
 #include <GL/gl3w.h>
 #include <glfw/glfw3.h>
@@ -18,6 +23,9 @@
 #include "jobsystem/workers.h"
 #include "log/log.h"
 #include "scene/scene.h"
+
+
+using namespace antlr4;
 
 using namespace WhiteDeer::Graphics;
 using namespace WhiteDeer::Engine;
@@ -113,6 +121,18 @@ class MainApplication : public Application {
       meshrenderer->SetMaterial("package/shaders/test_vt.vs",
                                 "package/shaders/cube.fs");
     }
+
+    std::fstream stream;
+    auto path = GetLocalFileSystem()->ToAbsolute("package/shaders/test_vnt.shader");
+    stream.open(path);
+    ANTLRInputStream input(stream);
+    GLSLLexer lexer(&input);
+    CommonTokenStream tokens(&lexer);
+    GLSLParser parser(&tokens);
+
+    tree::ParseTree *tree = parser.translation_unit();
+    auto s = tree->toStringTree(&parser);
+    LOGE << s;
   }
 };
 

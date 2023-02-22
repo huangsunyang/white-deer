@@ -164,5 +164,5 @@ void main() {
   float fresnel = max(u_material.fresnel, 0.0);
   vec4 finalColor = mix(envColor, texColor, pow(viewNormalDot, fresnel));
 
-  f_color = vec4(lightColor, 1.0) * finalColor;
+  f_color = vec4(lightColor, 1.0) * finalColor ;
 }

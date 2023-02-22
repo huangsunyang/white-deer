@@ -13,8 +13,14 @@ endif()
 
 # include path
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/shaderlab/generated)
 include_directories(${CMAKE_SOURCE_DIR}/third-party/chibi-scheme-0.10/include)
+include_directories(${CMAKE_SOURCE_DIR}/third-party/antlr4-cpp-runtime-4.12.0-source/runtime/src)
+
+# self managed 3rd party libraries
 add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/chibi-scheme-0.10)
+add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/antlr4-cpp-runtime-4.12.0-source)
+
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(gl3w CONFIG REQUIRED)
@@ -52,6 +58,13 @@ macro(apply_common_config target_name)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:chibi-scheme-0.10.0> $<TARGET_FILE_DIR:${target_name}>
     )
+
+    add_dependencies(${target_name} antlr4_static)
+    target_link_libraries(${target_name} PRIVATE antlr4_static)
+    # add_custom_command(TARGET ${target_name} POST_BUILD
+        # COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        # $<TARGET_FILE:antlr4_shared> $<TARGET_FILE_DIR:${target_name}>
+    # )
 
     # opengl
     # target_link_libraries(${target_name} PRIVATE opengl32)
