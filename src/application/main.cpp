@@ -2,6 +2,7 @@
 #include "antlr4-runtime.h"
 #include "GLSLParser.h"
 #include "GLSLLexer.h"
+#include "GLSLParserBaseListener.h"
 
 #define NOMINMAX 1
 #include <GL/gl3w.h>
@@ -30,6 +31,14 @@ using namespace antlr4;
 using namespace WhiteDeer::Graphics;
 using namespace WhiteDeer::Engine;
 using namespace WhiteDeer::Editor;
+
+class MyListener: public GLSLParserBaseListener
+{
+public:
+  virtual void enterInit_declarator_list(GLSLParser::Init_declarator_listContext * ctx) override {
+    LOGE << ctx->getText();
+  }
+};
 
 class MainApplication : public Application {
  public:
@@ -132,6 +141,8 @@ class MainApplication : public Application {
 
     tree::ParseTree *tree = parser.translation_unit();
     auto s = tree->toStringTree(&parser);
+    tree::ParseTreeWalker walker;
+    walker.walk(new MyListener(), tree);
     LOGE << s;
   }
 };
