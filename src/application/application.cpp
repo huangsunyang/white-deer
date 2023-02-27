@@ -97,9 +97,6 @@ void Application::Start() {
   assert(InitImGui());
 
   InitInput();
-
-  // hack
-  SceneManager::GetCurrentScene()->Awake();
 }
 
 void Application::Terminate() {

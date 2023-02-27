@@ -22,6 +22,9 @@ class LuaScript : public Script {
     transfer->Transfer("filename", &filename);
   }
 
+  string GetFileName() { return filename; }
+  void SetFileName(const string& s) { filename = s; }
+
  protected:
   string filename;
   sol::table m_instance;

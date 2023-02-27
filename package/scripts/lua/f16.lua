@@ -1,10 +1,14 @@
-F16Behavior = LuaScript.new()
+require "object"
+
+F16Behavior = NativeObject:new({
+    update = 1
+})
 
 function F16Behavior:Update()
-    print(type(self))
+    g = self
     if self.update == nil then self.update = 1
     else self.update = self.update + 1 end
-    print(self, self.update)
+    print(self, self.update, self.filename)
 end
 
 return F16Behavior

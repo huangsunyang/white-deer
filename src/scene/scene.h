@@ -20,16 +20,11 @@ class Scene : public GameObject {
  public:
   Scene(const string &name) : GameObject(name) {}
 
-  void Awake() {
-    auto luascripts = GetComponentsInChildren<LuaScript>();
-    for (auto script : luascripts) {
-      script->Awake();
-    }
-  }
-
   void Update() {
     auto luascripts = GetComponentsInChildren<LuaScript>();
     for (auto script : luascripts) {
+      if (!script->IsInitialized())
+        script->Awake();
       script->Update();
     }
   }

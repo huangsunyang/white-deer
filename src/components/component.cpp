@@ -26,6 +26,7 @@ class InitializerHook {
 
     auto luascriptComp = lua.new_usertype<LuaScript>(
         "LuaScript", sol::constructors<LuaScript()>(),
+        "filename", sol::property(&LuaScript::GetFileName, &LuaScript::SetFileName),
         sol::base_classes, sol::bases<Script, Component>()
     );
   }
