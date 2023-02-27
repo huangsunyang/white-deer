@@ -113,6 +113,8 @@ void Application::MainLoop() {
   glfwPollEvents();
   TimeManager::GetInstance()->Tick();
 
+  SceneManager::GetCurrentScene()->Update();
+
   // todo: render to be tick func
   RenderLoop::DoRenderLoop();
 

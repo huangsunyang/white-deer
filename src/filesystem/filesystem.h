@@ -21,6 +21,10 @@ class FileSystem {
   virtual fs::path ToAbsolute(fs::path) = 0;
   virtual bool Open(fs::path) = 0;
 
+  virtual fs::path BaseName(fs::path path) {
+    return path.filename();
+  }
+
  protected:
   fs::path m_root;
 };

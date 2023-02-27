@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sol/sol.hpp>
 #include <string>
 
 #include "filesystem/localfilesystem.h"
@@ -18,9 +19,12 @@ class LuaManager : public Singleton<LuaManager> {
 
   ~LuaManager();
 
+  sol::state_view _GetLua() { return sol::state_view(L); }
+  static sol::state_view GetLua() { return GetInstance()->_GetLua(); }
+
   bool DoString(const string &code);
   bool DoFile(const string &fileName);
-  string Repl(const string& code);
+  string Repl(const string &code);
 
   // test
   static int native_static(lua_State *);

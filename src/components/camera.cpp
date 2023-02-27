@@ -181,7 +181,7 @@ void Camera::Cull(vector<Renderer*>& renderers) {
     }
 
     if (valid < renderers.size()) {
-        LOGE << valid << " " << renderers.size();
+        // LOGE << valid << " " << renderers.size();
     }
 
     // remove unused slots

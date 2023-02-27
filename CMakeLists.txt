@@ -14,11 +14,9 @@ endif()
 # include path
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/shaderlab/generated)
-include_directories(${CMAKE_SOURCE_DIR}/third-party/chibi-scheme-0.10/include)
 include_directories(${CMAKE_SOURCE_DIR}/third-party/antlr4-cpp-runtime-4.12.0-source/runtime/src)
 
 # self managed 3rd party libraries
-add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/chibi-scheme-0.10)
 add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/antlr4-cpp-runtime-4.12.0-source)
 
 
@@ -32,6 +30,7 @@ find_package(Tracy CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(rttr CONFIG REQUIRED)
+find_package(sol2 CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 
 macro(apply_common_config target_name)
@@ -48,15 +47,8 @@ macro(apply_common_config target_name)
         imgui::imgui
         plog::plog
         Tracy::TracyClient
+        sol2
         ${LUA_LIBRARIES}
-    )
-
-    # chibi-scheme not avaiable on vcpkg
-    add_dependencies(${target_name} chibi-scheme-0.10.0)
-    target_link_libraries(${target_name} PRIVATE chibi-scheme-0.10.0)
-    add_custom_command(TARGET ${target_name} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:chibi-scheme-0.10.0> $<TARGET_FILE_DIR:${target_name}>
     )
 
     add_dependencies(${target_name} antlr4_static)

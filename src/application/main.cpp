@@ -16,6 +16,7 @@
 #include "components/light.h"
 #include "components/renderer.h"
 #include "components/skybox.h"
+#include "components/luascript.h"
 #include "editor/gui/testwindow.h"
 #include "filesystem/filesystemmanager.h"
 #include "graphics/opengl/glTexture.h"
@@ -66,6 +67,8 @@ class MainApplication : public Application {
       meshrenderer->SetMesh("package/models/f16/f16.obj");
       meshrenderer->SetTexture("package/models/f16/f16s.bmp");
       meshrenderer->SetMaterial("package/shaders/test_vnt.shader");
+      auto luascript = obj->AddComponent<LuaScript>();
+      luascript->SetScript("f16");
     }
 
     {

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "components/component.h"
+#include "components/luascript.h"
 #include "scene/gameobject.h"
 #include "utils/common/registry.h"
 #include "utils/common/singleton.h"
@@ -19,6 +20,12 @@ class Scene : public GameObject {
  public:
   Scene(const string &name) : GameObject(name) {}
 
+  void Update() {
+    auto luascripts = GetComponentsInChildren<LuaScript>();
+    for (auto script: luascripts) {
+        script->Update();
+    }
+  }
  protected:
 };
 
