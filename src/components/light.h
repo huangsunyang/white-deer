@@ -16,7 +16,7 @@ namespace WhiteDeer {
 namespace Engine {
 
 class Light : public Component {
-  DECLARE_COMPONENT(Light)
+  DECLARE_WHITEDEER_TYPE(Light)
 
  public:
   LightType GetType() { return m_type; }

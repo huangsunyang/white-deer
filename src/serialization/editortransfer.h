@@ -1,7 +1,8 @@
 #pragma once
 
+#include <string>
 #include <imgui.h>
-
+#include <imgui_stdlib.h>
 #include <glm/glm.hpp>
 
 #include "serialization/transferbase.h"
@@ -13,6 +14,7 @@ static const float FLOAT_MIN = -10000.0f;
 static const float FLOAT_MAX = 10000.0f;
 static const float FLOAT_STEP = 0.05f;
 
+using std::string;
 class Component;
 
 class EditorTransfer {
@@ -47,6 +49,11 @@ class EditorTransfer {
   void Transfer<float>(const string& name, float* data) {
     ImGui::DragFloat(name.c_str(), data, FLOAT_STEP, FLOAT_MIN, FLOAT_MAX,
                      "%.2f", 1.0f);
+  }
+
+  template <>
+  void Transfer<string>(const string& name, string * data) {
+    ImGui::InputText(name.c_str(), data);
   }
 
   template <>

@@ -11,7 +11,7 @@ namespace WhiteDeer {
 namespace Engine {
 
 class Transform : public Component {
-  DECLARE_COMPONENT(Transform)
+  DECLARE_WHITEDEER_TYPE(Transform)
 
  public:
   glm::vec3 GetPosition() { return m_position; }

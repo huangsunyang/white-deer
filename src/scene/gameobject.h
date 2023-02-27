@@ -57,7 +57,7 @@ Component *GameObject::AddComponent(Component *comp) {
   m_components.push_back(comp);
   std::sort(m_components.begin(), m_components.end(),
             [](Component *x, Component *y) {
-              return x->GetComponentName() < y->GetComponentName();
+              return x->GetTypeName() < y->GetTypeName();
             });
   comp->m_gameobject = this;
   return comp;

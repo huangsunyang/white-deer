@@ -19,7 +19,7 @@ using WhiteDeer::Utils::Singleton;
 using namespace WhiteDeer::Graphics;
 
 class Camera : public Component {
-  DECLARE_COMPONENT(Camera)
+  DECLARE_WHITEDEER_TYPE(Camera)
   friend class WhiteDeer::Graphics::RenderLoop;
 
  public:

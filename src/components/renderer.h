@@ -18,7 +18,7 @@ using namespace Graphics;
 using namespace Utils;
 
 class Renderer : public Component {
-  DECLARE_COMPONENT(Renderer)
+  DECLARE_WHITEDEER_TYPE(Renderer)
   friend class RenderLoop;
 
  public:
@@ -44,7 +44,7 @@ class Renderer : public Component {
 };
 
 class MeshRenderer : public Renderer {
-  DECLARE_COMPONENT(MeshRenderer)
+  DECLARE_WHITEDEER_TYPE(MeshRenderer)
 
  public:
   template <typename... Args>

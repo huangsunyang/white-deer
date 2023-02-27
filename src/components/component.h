@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+
 #include "serialization/editortransfer.h"
 
 using std::string;
@@ -10,15 +11,15 @@ namespace Engine {
 class GameObject;
 class TransferBase;
 
-#define DECLARE_COMPONENT(name)                                         \
+#define DECLARE_WHITEDEER_TYPE(name)                                         \
  public:                                                                \
-  virtual string GetComponentName() { return #name; }                   \
+  virtual string GetTypeName() { return #name; }                        \
   virtual void VirtualTransfer(EditorTransfer* t, const string& name) { \
     Transfer(t, name);                                                  \
   }
 
 class Component {
-  DECLARE_COMPONENT(Component)
+  DECLARE_WHITEDEER_TYPE(Component)
   friend class GameObject;
 
  public:

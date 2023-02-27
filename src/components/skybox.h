@@ -10,7 +10,7 @@ namespace Engine {
 using namespace WhiteDeer::Graphics;
 
 class SkyBox : public Component {
-  DECLARE_COMPONENT(SkyBox)
+  DECLARE_WHITEDEER_TYPE(SkyBox)
 
  public:
   SkyBox() { m_mesh = Mesh::GetOrLoad("cube"); }

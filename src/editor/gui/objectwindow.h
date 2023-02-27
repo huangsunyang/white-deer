@@ -27,11 +27,11 @@ class ObjectWindow : public EditorWindow<ObjectWindow> {
       int sameNameCount = 0;
       for (int i = 0; i < components.size(); i++) {
         EditorTransfer transfer;
-        auto name = components[i]->GetComponentName();
+        auto name = components[i]->GetTypeName();
 
         // Light, Light1, Ligh2...
-        if (i > 0 && components[i]->GetComponentName() ==
-                         components[i - 1]->GetComponentName()) {
+        if (i > 0 && components[i]->GetTypeName() ==
+                         components[i - 1]->GetTypeName()) {
           sameNameCount += 1;
           name += std::to_string(sameNameCount);
         } else {
