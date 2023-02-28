@@ -11,7 +11,22 @@ class InitializerHook {
     auto lua = LuaManager::GetLua();
     auto gameobject = lua.new_usertype<GameObject>(
         "GameObject", sol::constructors<GameObject(const string&)>(),
-        "GetName", &GameObject::GetName
+        "GetName", &GameObject::GetName,
+        "GetTransformComponent", &GameObject::GetComponent<Transform>
+    );
+
+    auto vec3 = lua.new_usertype<glm::vec3>(
+        "vec3", sol::constructor_list<glm::vec3(), glm::vec3(float, float, float)>(),
+        "x", &glm::vec3::x,
+        "y", &glm::vec3::y,
+        "z", &glm::vec3::z
+    );
+
+    auto transformComp = lua.new_usertype<Transform>(
+        "Transform", sol::constructors<Transform()>(),
+        "position", sol::property(&Transform::GetPosition, sol::resolve<void(glm::vec3)>(&Transform::SetPosition)),
+        "rotation", sol::property(&Transform::GetRotation, sol::resolve<void(glm::vec3)>(&Transform::SetRotation)),
+        "scale", sol::property(&Transform::GetScale, sol::resolve<void(glm::vec3)>(&Transform::SetScale))
     );
 
     auto component = lua.new_usertype<Component>(

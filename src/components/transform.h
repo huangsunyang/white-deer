@@ -22,6 +22,10 @@ class Transform : public Component {
   void SetRotation(float x, float y, float z) { m_rotation = {x, y, z}; }
   void SetScale(float x, float y, float z) { m_scale = {x, y, z}; }
 
+  void SetPosition(glm::vec3 v) { m_position = v; }
+  void SetRotation(glm::vec3 v) { m_rotation= v; }
+  void SetScale(glm::vec3 v) { m_scale= v; }
+
   glm::mat4 GetTranslationMatrix();
   glm::mat4 GetRotationMatrix();
   glm::mat4 GetScaleMatrix();
