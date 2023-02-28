@@ -10,6 +10,8 @@ void LuaScript::Awake() {
   auto as_table = luaModule.get<sol::table>();
   m_instance = as_table["new"](as_table);
   m_instance["__instance"] = this;
+
+  m_instance["Awake"](m_instance);
 }
 
 void LuaScript::Update() {

@@ -55,7 +55,9 @@ LuaManager::LuaManager() {
   root.make_preferred();
 
   // add script root to import path list
-  DoString(fmt::format("package.path = package.path..[[;{0}\\?.lua]]",
+  DoString(fmt::format("package.path = [[{0}\\?.lua;]]..package.path",
+                       root.string()));
+  DoString(fmt::format("package.cpath = [[{0}\\?.dll;]]..package.cpath",
                        root.string()));
   // repl facilities
   DoFile("repl.lua");
