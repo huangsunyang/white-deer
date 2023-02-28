@@ -8,13 +8,14 @@
 ------------------------------------------
 -- 在Module中如果定义此标记，则对此module进行reload操作
 -- local M = { HOT_RELOAD = true }
-
 local HOT_RELOAD_MARK = "HOT_RELOAD"
-local loaded_modules = setmetatable({}, { __mode = "v" })
+local loaded_modules = setmetatable({}, {
+    __mode = "v"
+})
 local ignore_modules = {}
 local config = {
     debug = false,
-    script_root_path = UE.UUnLuaFunctionLibrary.GetScriptRootPath(),
+    script_root_path = script_root_path .. '\\',
     ignore_modules = ignore_modules
 }
 local hook = {
@@ -29,25 +30,31 @@ local dump = function(tbl, max_indent)
     local rep = string.rep
     local handled = {}
     local function traverse(tbl, indent)
-        if not indent then indent = 0 end
-        if type(tbl) ~= "table" then return tostring(tbl) end
+        if not indent then
+            indent = 0
+        end
+        if type(tbl) ~= "table" or tbl.__type then
+            return tostring(tbl)
+        end
 
-        if(indent > max_indent) then return tostring(tbl) end
+        if (indent > max_indent) then
+            return tostring(tbl)
+        end
 
         if handled[tbl] then
             return ""
         end
         handled[tbl] = true
         local ret = rep(" ", indent) .. "{\r\n"
-        indent = indent + 2 
+        indent = indent + 2
         for k, v in pairs(tbl) do
             ret = ret .. rep(" ", indent)
             if type(k) == "number" then
                 ret = ret .. "[" .. k .. "] = "
             elseif type(k) == "string" then
-                ret = ret  .. k ..  " = "   
+                ret = ret .. k .. " = "
             else
-                ret = ret  .. tostring(k) ..  " = "   
+                ret = ret .. tostring(k) .. " = "
             end
             if type(v) == "number" then
                 ret = ret .. v .. ",\r\n"
@@ -71,7 +78,7 @@ end
 
 local print = function(...)
     if config.debug then
-        UnLua.Log("HotReload ", ...)
+        prints(tostring(select(1, ...)))
     end
 end
 
@@ -115,14 +122,20 @@ local loaded_module_times = {}
 
 local function get_last_modified_time(module_name)
     local filename = config.script_root_path .. module_name:gsub("%.", "/") .. ".lua"
-    return UE.UUnLuaFunctionLibrary.GetFileLastModifiedTimestamp(filename)
+    return GetFileLastModifiedTimestamp(filename)
 end
 
 local function make_sandbox()
     local reloading
     local loaded
-    local proxy = setmetatable({}, { __index = _G, __newindex = _G })
-    local env_mt = { __index = proxy, __newindex = proxy }
+    local proxy = setmetatable({}, {
+        __index = _G,
+        __newindex = _G
+    })
+    local env_mt = {
+        __index = proxy,
+        __newindex = proxy
+    }
 
     local function load(module_name)
         local found, chunk
@@ -181,17 +194,21 @@ local function make_sandbox()
 
     local function enter(modules)
         reloading = true
-        loaded = setmetatable({}, { __mode = "kv" })
+        loaded = setmetatable({}, {
+            __mode = "kv"
+        })
 
         for name, module in pairs(modules) do
             loaded[name] = module
-            loaded[module] = name     
+            loaded[module] = name
         end
     end
 
     local function exit()
         reloading = false
-        loaded = setmetatable({}, { __mode = "kv" })
+        loaded = setmetatable({}, {
+            __mode = "kv"
+        })
     end
 
     local function is_loaded(obj)
@@ -217,7 +234,7 @@ local function make_sandbox()
         exit = exit,
         load = load,
         require = require,
-        is_loaded = is_loaded,
+        is_loaded = is_loaded
     }
 end
 
@@ -231,7 +248,7 @@ local function merge_objects(module_res)
                 for old, new in pairs(value_map) do
                     if old == nil and not sandbox.is_loaded(new) then
                         m.old_module[name] = new
-                    elseif type(new) == "table" and not sandbox.is_loaded(new) then
+                    elseif type(new) == "table" and not new.__type and not sandbox.is_loaded(new) then
                         print("COPY", tostring(new), tostring(old))
                         for k, nv in pairs(new) do
                             old[k] = nv
@@ -239,7 +256,7 @@ local function merge_objects(module_res)
                     elseif type(new) == "function" then
                         local i = 1
                         while true do
-                            local name,v = debug.getupvalue(new, i)
+                            local name, v = debug.getupvalue(new, i)
                             if name == nil or name == "" then
                                 break
                             end
@@ -249,10 +266,10 @@ local function merge_objects(module_res)
                                 print("SET UV :", tostring(new), name, tostring(uv.replaced_upvalue))
                                 debug.setupvalue(new, i, uv.replaced_upvalue)
                             end
-                        i = i + 1
+                            i = i + 1
                         end
                     end
-                end			
+                end
             end
         end
     end
@@ -300,7 +317,10 @@ local function collect_module_info(module)
     for k, v in pairs(module) do
         if sandbox.is_loaded(v) then
         elseif type(v) == "function" then
-            table.insert(ret, {name = k, value = v})
+            table.insert(ret, {
+                name = k,
+                value = v
+            })
         end
     end
     return ret
@@ -314,7 +334,11 @@ local function match_module(new_module_info, old_module)
     for _, v in ipairs(new_module_info) do
         local oldFun = rawget(old_module, v.name)
         if oldFun and oldFun ~= v.value then
-            table.insert(ret, { [v.name] = { [oldFun] = v.value } } )
+            table.insert(ret, {
+                [v.name] = {
+                    [oldFun] = v.value
+                }
+            })
         end
     end
 
@@ -346,15 +370,18 @@ local function match_upvalues(value_info_map, old_upvalues)
                                 -- 新增的upvalue
                                 print("ADD NEW UPVALUE : ", tostring(new), name, tostring(new_upvalue))
                                 -- 解决新增的upvalue是当前module
-                                if type(new_upvalue) == "table" or type(new_upvalue) == "function" and value_info_map[new_upvalue] ~= nil then
+                                if type(new_upvalue) == "table" or type(new_upvalue) == "function" and
+                                    value_info_map[new_upvalue] ~= nil then
                                     replaced_upvalue = value_info_map[new_upvalue]
                                 else
                                     replaced_upvalue = new_upvalue
                                 end
                             end
-    
+
                             if replaced_upvalue then
-                                ret[id] = { replaced_upvalue = replaced_upvalue }
+                                ret[id] = {
+                                    replaced_upvalue = replaced_upvalue
+                                }
                             end
                         end
                         i = i + 1
@@ -369,7 +396,11 @@ end
 
 local function update_global(value_map)
     local running_state = coroutine.running()
-    local exclude = { [debug] = true, [coroutine] = true, [io] = true }
+    local exclude = {
+        [debug] = true,
+        [coroutine] = true,
+        [io] = true
+    }
     exclude[exclude] = true
     exclude[M] = true
     exclude[sandbox] = true
@@ -422,9 +453,11 @@ local function update_global(value_map)
         -- print("update_table : ", dump(root, 2))
         exclude[root] = true
         local t = type(root)
-        if t == "table" then
+        if t == "table" and not root.__type then
             local mt = getmetatable(root)
-            if mt then update_table(mt) end
+            if mt then
+                update_table(mt)
+            end
             local ReplaceK = {}
             for key, value in safe_pairs(root) do
                 local nv = value_map[value]
@@ -445,7 +478,9 @@ local function update_global(value_map)
             end
         elseif t == "userdata" then
             local mt = getmetatable(root)
-            if mt then update_table(mt) end
+            if mt then
+                update_table(mt)
+            end
             local user_value = debug.getuservalue(root)
             if user_value then
                 local nv = value_map[user_value]
@@ -470,7 +505,7 @@ local function update_global(value_map)
                         update_table(v)
                     end
                 end
-                i=i+1
+                i = i + 1
             end
         end
     end
@@ -493,7 +528,11 @@ local function update_modules(old_modules, new_modules, new_envs)
                 values = {},
                 old_module = old_module
             }
-            table.insert(moduleres.values, { [new_module] = { [old_module] = new_module } } )
+            table.insert(moduleres.values, {
+                [new_module] = {
+                    [old_module] = new_module
+                }
+            })
             print("--------------Print ValueMap--------------")
             print(dump(moduleres.values, 6))
             result[i] = moduleres
@@ -504,11 +543,11 @@ local function update_modules(old_modules, new_modules, new_envs)
             local old_module_upvalues = collect_module_upvalues(old_module)
             print("--------------Print OldModuleUpValue--------------")
             print(dump(old_module_upvalues, 6))
-            
+
             local moduleres = {
                 values = {},
                 upvalue_map = {},
-                old_module = old_module,
+                old_module = old_module
             }
 
             moduleres.values = match_module(new_module_info, old_module)
@@ -528,7 +567,7 @@ local function update_modules(old_modules, new_modules, new_envs)
             moduleres.upvalue_map = match_upvalues(moduleres.values, old_module_upvalues)
             print("--------------Print UVMap--------------")
             print(dump(moduleres.upvalue_map, 10))
-            
+
             result[i] = moduleres
         end
     end
@@ -545,7 +584,6 @@ local function update_modules(old_modules, new_modules, new_envs)
         end
     end
 
-    print("--------------Print AllValueMap--------------")
     print(dump(all_value_maps))
     update_global(all_value_maps)
 
@@ -571,7 +609,7 @@ local function reload_modules(module_names)
     local new_modules = {}
     local module_envs = {}
 
-    for _, module_name in ipairs(module_names) do		
+    for _, module_name in ipairs(module_names) do
         if loaded_modules[module_name] == nil then
             sandbox.require(module_name)
         else
@@ -589,9 +627,9 @@ local function reload_modules(module_names)
                 else
                     new_module = env
                 end
-                old_modules[#old_modules+1] = loaded_modules[module_name]
-                new_modules[#new_modules+1] = new_module
-                module_envs[#module_envs+1] = env
+                old_modules[#old_modules + 1] = loaded_modules[module_name]
+                new_modules[#new_modules + 1] = new_module
+                module_envs[#module_envs + 1] = env
                 call_hook("module_loaded", new_module, module_name, true)
             else
                 sandbox.exit()
@@ -622,6 +660,6 @@ function M.reload()
     end
 end
 
-M.require = sandbox.require
+require = sandbox.require
 
 return M

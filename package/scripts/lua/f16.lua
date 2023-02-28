@@ -15,8 +15,8 @@ function F16Behavior:Awake()
 end
 
 function F16Behavior:Update()
-    self.count = (self.count + 1) % 200
-    local delta = self.count < 100 and 0.01 or -0.01
+    self.count = (self.count + 1) % 100
+    local delta = self.count < 50 and 0.03 or -0.03
 
     self.position.z = self.position.z + delta
     self.transform.position = self.position

@@ -9,29 +9,6 @@
 namespace WhiteDeer {
 namespace Engine {
 
-struct player {
- public:
-  int bullets;
-  int speed;
-
-  player() : player(3, 100) {}
-  player(int ammo) : player(ammo, 100) {}
-  player(int ammo, int hitpoints) : bullets(ammo), hp(hitpoints) {}
-
-  void boost() { speed += 10; }
-  bool shoot() {
-    if (bullets < 1) return false;
-    --bullets;
-    return true;
-  }
-
-  void set_hp(int value) { hp = value; }
-  int get_hp() const { return hp; }
-
- private:
-  int hp;
-};
-
 int test_call_native(lua_State *L) {
   auto number = luaL_checkinteger(L, 1);
   LOGI << "call native success! number =" << number;
@@ -47,47 +24,67 @@ int LuaManager::native_static(lua_State *) {
   return 0;
 }
 
+int my_exception_handler(lua_State* L,
+     sol::optional<const std::exception&> maybe_exception,
+     sol::string_view description) {
+	// L is the lua state, which you can wrap in a state_view if
+	// necessary maybe_exception will contain exception, if it
+	// exists description will either be the what() of the
+	// exception or a description saying that we hit the
+	// general-case catch(...)
+	std::cout << "An exception occurred in a function, here's "
+	             "what it says ";
+	if (maybe_exception) {
+		std::cout << "(straight from the exception): ";
+		const std::exception& ex = *maybe_exception;
+		std::cout << ex.what() << std::endl;
+	}
+	else {
+		std::cout << "(from the description parameter): ";
+		std::cout.write(description.data(),
+		     static_cast<std::streamsize>(description.size()));
+		std::cout << std::endl;
+	}
+
+	// you must push 1 element onto the stack to be
+	// transported through as the error object in Lua
+	// note that Lua -- and 99.5% of all Lua users and libraries
+	// -- expects a string so we push a single string (in our
+	// case, the description of the error)
+	return sol::stack::push(L, description);
+}
+
 LuaManager::LuaManager() {
   L = luaL_newstate();
   luaL_openlibs(L);
+  sol::state_view lua(L);
 
   root = GetLocalFileSystem()->ToAbsolute("package/scripts/lua");
   root.make_preferred();
 
+  lua.set_exception_handler(&my_exception_handler);
+
   // add script root to import path list
-  DoString(fmt::format("package.path = [[{0}\\?.lua;]]..package.path",
+  lua.script(fmt::format("package.path = [[{0}\\?.lua;]]..package.path",
                        root.string()));
-  DoString(fmt::format("package.cpath = [[{0}\\?.dll;]]..package.cpath",
+  lua.script(fmt::format("package.cpath = [[{0}\\?.dll;]]..package.cpath",
                        root.string()));
-  // repl facilities
-  DoFile("repl.lua");
+  // repl/hotreload facilities
+  lua["GetFileLastModifiedTimestamp"] = [](string s) {
+    std::filesystem::path p(s);
+    if (!std::filesystem::exists(p)) {
+        return 0;
+    }
+    auto last_write_time = std::filesystem::last_write_time(p);
+    return (int)last_write_time.time_since_epoch().count();
+  };
 
-  sol::state_view lua(L);
-  lua.script("print('Hello sol2')");
-
-  lua["p"] = player();
-  lua["q"] = new player();
-
-  lua_register(L, "test_call_native", LuaManager::native_static);
-
-  sol::usertype<player> player_type = lua.new_usertype<player>(
-      "player",
-      // 3 constructors
-      sol::constructors<player(), player(int), player(int, int)>());
-
-  // typical member function that returns a variable
-  player_type["shoot"] = &player::shoot;
-  // typical member function
-  player_type["boost"] = &player::boost;
-
-  // gets or set the value using member variable syntax
-  player_type["hp"] = sol::property(&player::get_hp, &player::set_hp);
-
-  // read and write variable
-  player_type["speed"] = &player::speed;
-  // can only read from, not write to
-  // .set(foo, bar) is the same as [foo] = bar;
-  player_type.set("bullets", sol::readonly(&player::bullets));
+  lua["prints"] = [](std::string s) {
+    LOGE << s;
+  };
+  lua["script_root_path"] = root.string();
+  lua.script("require 'repl'");
+  lua.script("require 'hotreload'");
 }
 
 LuaManager::~LuaManager() {

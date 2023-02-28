@@ -19,6 +19,7 @@ class LuaWindow : public EditorWindow<LuaWindow> {
     if (m_showing) {
       ImGui::Begin("Lua Window", &m_showing);
       ShowLuaGCMemInfo();
+      ShowHotReloadButton();
       ShowInputField();
       m_textscroll.Draw("Lua Window", &m_showing);
       ImGui::End();
@@ -38,6 +39,20 @@ class LuaWindow : public EditorWindow<LuaWindow> {
       lastRecordTime = currentTime;
     }
     ImGui::Text("Lua Memory: %s KB", luaMem.c_str());
+  }
+
+  void ShowHotReloadButton() {
+    if (ImGui::Button("Hot Reload")) {
+        auto lua = LuaManager::GetLua();
+        auto result = lua.script("require('hotreload').reload()", sol::script_pass_on_error);
+        if (!result.valid()) {
+            sol::error err = result;
+			sol::call_status status = result.status();
+			std::cout << "Something went horribly wrong: "
+			          << sol::to_string(status) << " error"
+			          << "\n\t" << err.what() << std::endl;
+        }
+    }
   }
 
   void ShowInputField() {
