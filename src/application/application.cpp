@@ -16,6 +16,7 @@
 #include "imgui_impl_opengl3.h"
 #include "log/log.h"
 #include "ticktime/timemanager.h"
+#include "physics/physicsmanager.h"
 
 namespace WhiteDeer {
 namespace Engine {
@@ -114,6 +115,8 @@ void Application::MainLoop() {
   TimeManager::GetInstance()->Tick();
 
   SceneManager::GetCurrentScene()->Update();
+
+  PhysicsManager::GetInstance()->Update();
 
   // todo: render to be tick func
   RenderLoop::DoRenderLoop();

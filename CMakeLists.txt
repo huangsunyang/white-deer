@@ -37,6 +37,11 @@ find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 macro(apply_common_config target_name)
     # c++17
     target_compile_features(${target_name} PRIVATE cxx_std_17)
+    target_compile_options(${target_name} PRIVATE
+        $<$<CONFIG:>:/MD>
+        $<$<CONFIG:Debug>:/MDd>
+        $<$<CONFIG:Release>:/MD>
+    )
     target_include_directories(${target_name} PRIVATE ${LUA_INCLUDE_DIR} ${STB_INCLUDE_DIRS})
 
     target_link_libraries(${target_name} PRIVATE
