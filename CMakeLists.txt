@@ -14,11 +14,11 @@ endif()
 # include path
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/shaderlab/generated)
+include_directories(${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/include)
 include_directories(${CMAKE_SOURCE_DIR}/third-party/antlr4-cpp-runtime-4.12.0-source/runtime/src)
 
 # self managed 3rd party libraries
 add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/antlr4-cpp-runtime-4.12.0-source)
-
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(gl3w CONFIG REQUIRED)
@@ -31,6 +31,7 @@ find_package(Lua REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(rttr CONFIG REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
+find_package(unofficial-recast CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 
 macro(apply_common_config target_name)
@@ -48,15 +49,34 @@ macro(apply_common_config target_name)
         plog::plog
         Tracy::TracyClient
         sol2
+        recast
         ${LUA_LIBRARIES}
     )
 
     add_dependencies(${target_name} antlr4_static)
     target_link_libraries(${target_name} PRIVATE antlr4_static)
-    # add_custom_command(TARGET ${target_name} POST_BUILD
-        # COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        # $<TARGET_FILE:antlr4_shared> $<TARGET_FILE_DIR:${target_name}>
-    # )
+
+    target_link_libraries(${target_name} PRIVATE
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysX_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXCommon_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXCooking_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXFoundation_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXPvdSDK_static_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXTask_static_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXVehicle_static_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXVehicle2_static_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXExtensions_static_64.lib
+        ${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/PhysXCharacterKinematic_static_64.lib
+    )
+
+    file(GLOB PHYSX_DLLS_PDBS
+        "${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/*.dll"
+        "${CMAKE_SOURCE_DIR}/third-party/physx-5.1.3/debug/*.pdb"
+    )
+    add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PHYSX_DLLS_PDBS} $<TARGET_FILE_DIR:${target_name}>
+    )
 
     # opengl
     # target_link_libraries(${target_name} PRIVATE opengl32)
