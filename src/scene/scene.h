@@ -5,6 +5,7 @@
 
 #include "components/component.h"
 #include "components/luascript.h"
+#include "physics/physicsmanager.h"
 #include "scene/gameobject.h"
 #include "utils/common/registry.h"
 #include "utils/common/singleton.h"
@@ -12,24 +13,20 @@
 using std::string;
 using std::vector;
 
+using namespace physx;
+
 namespace WhiteDeer {
 namespace Engine {
 
 // fast and rough
 class Scene : public GameObject {
  public:
-  Scene(const string &name) : GameObject(name) {}
-
-  void Update() {
-    auto luascripts = GetComponentsInChildren<LuaScript>();
-    for (auto script : luascripts) {
-      if (!script->IsInitialized())
-        script->Awake();
-      script->Update();
-    }
-  }
+  Scene(const string& name);
+  void Update();
+  PxScene* GetPhysicsScene() { return m_physicsScene; }
 
  protected:
+  PxScene* m_physicsScene;
 };
 
 using Utils::StaticNamedPool;

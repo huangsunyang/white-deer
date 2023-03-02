@@ -116,8 +116,6 @@ void Application::MainLoop() {
 
   SceneManager::GetCurrentScene()->Update();
 
-  PhysicsManager::GetInstance()->Update();
-
   // todo: render to be tick func
   RenderLoop::DoRenderLoop();
 

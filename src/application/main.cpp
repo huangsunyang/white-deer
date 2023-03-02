@@ -17,6 +17,7 @@
 #include "components/renderer.h"
 #include "components/skybox.h"
 #include "components/luascript.h"
+#include "components/collider.h"
 #include "editor/gui/testwindow.h"
 #include "filesystem/filesystemmanager.h"
 #include "graphics/opengl/glTexture.h"
@@ -59,6 +60,9 @@ class MainApplication : public Application {
       meshrenderer->SetMesh("package/models/bun_zipper.ply");
       meshrenderer->SetMaterial("package/shaders/test.vs",
                                 "package/shaders/test.fs");
+      auto collider = obj->AddComponent<Collider>();
+      collider->SetColliderType(ColliderType_Box, 1, 1, 1);
+      collider->SetStatic(false);
     }
 
     {
@@ -132,6 +136,9 @@ class MainApplication : public Application {
       meshrenderer->SetTexture("package/textures/flower-pattern.jpg");
       meshrenderer->SetMaterial("package/shaders/test_vt.vs",
                                 "package/shaders/cube.fs");
+
+      auto collider = plane->AddComponent<Collider>();
+      collider->SetColliderType(ColliderType_Box, 100, 0.1, 100);
     }
 
     std::fstream stream;

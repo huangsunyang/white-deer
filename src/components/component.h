@@ -11,7 +11,7 @@ namespace Engine {
 class GameObject;
 class TransferBase;
 
-#define DECLARE_WHITEDEER_TYPE(name)                                         \
+#define DECLARE_WHITEDEER_TYPE(name)                                    \
  public:                                                                \
   virtual string GetTypeName() { return #name; }                        \
   virtual void VirtualTransfer(EditorTransfer* t, const string& name) { \
@@ -24,6 +24,11 @@ class Component {
 
  public:
   virtual ~Component() {}
+
+  virtual void Awake() { m_initialized = true; }
+  virtual void Update() {}
+  virtual bool IsInitialized() { return m_initialized; }
+  virtual void OnDestroy() {}
 
   template <typename T>
   bool IsInstanceOf() {
@@ -42,6 +47,7 @@ class Component {
 
  protected:
   GameObject* m_gameobject;
+  bool m_initialized = false;
 };
 
 }  // namespace Engine
