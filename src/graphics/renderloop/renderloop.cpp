@@ -109,7 +109,7 @@ void RenderLoop::RenderSingleCamera(Camera* camera) {
       program->SetUniformTexture("u_shadowMap", *camera->GetShadowMap(), 1);
     }
     if (skyboxs.size() > 0) {
-      program->SetUniformTexture("u_skybox", *skyboxs[0]->GetCubeMapTexture());
+      program->SetUniformTexture("u_skybox", *skyboxs[0]->GetCubeMapTexture(), 2);
     }
 
     // light
